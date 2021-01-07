@@ -1,0 +1,824 @@
+collecting rollout for learning
+RolloutReturn(episode_reward=2.887551, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=4.387589, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=8.552528, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 1e+03    |
+|    ep_rew_mean     | 5.48     |
+| time/              |          |
+|    episodes        | 4        |
+|    fps             | 390      |
+|    time_elapsed    | 10       |
+|    total timesteps | 4004     |
+---------------------------------
+RolloutReturn(episode_reward=6.084214, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=5.784321, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=60.173374, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=213.51228, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 68.1     |
+| time/               |          |
+|    episodes         | 8        |
+|    fps              | 96       |
+|    time_elapsed     | 83       |
+|    total timesteps  | 8008     |
+| train/              |          |
+|    acto_critic_loss | 0.0858   |
+|    bc_loss          | 0.00924  |
+|    critic_loss      | 0.0127   |
+|    learning_rate    | 0.001    |
+|    n_updates        | 3003     |
+|    sl_loss          | 0.055    |
+|    sl_weight        | 0.985    |
+----------------------------------
+RolloutReturn(episode_reward=243.0219, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=240.06836, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=244.76474, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=250.71962, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 127      |
+| time/               |          |
+|    episodes         | 12       |
+|    fps              | 66       |
+|    time_elapsed     | 179      |
+|    total timesteps  | 12012    |
+| train/              |          |
+|    acto_critic_loss | -1.68    |
+|    bc_loss          | 0.00691  |
+|    critic_loss      | 0.0361   |
+|    learning_rate    | 0.001    |
+|    n_updates        | 7007     |
+|    sl_loss          | 0.052    |
+|    sl_weight        | 0.977    |
+----------------------------------
+RolloutReturn(episode_reward=244.99185, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=251.65604, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=246.49191, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=259.54712, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 159      |
+| time/               |          |
+|    episodes         | 16       |
+|    fps              | 57       |
+|    time_elapsed     | 278      |
+|    total timesteps  | 16016    |
+| train/              |          |
+|    acto_critic_loss | -3.49    |
+|    bc_loss          | 0.00616  |
+|    critic_loss      | 0.0491   |
+|    learning_rate    | 0.001    |
+|    n_updates        | 11011    |
+|    sl_loss          | 0.0506   |
+|    sl_weight        | 0.969    |
+----------------------------------
+RolloutReturn(episode_reward=257.91907, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=260.49567, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=276.33954, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=262.15982, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 180      |
+| time/               |          |
+|    episodes         | 20       |
+|    fps              | 51       |
+|    time_elapsed     | 385      |
+|    total timesteps  | 20020    |
+| train/              |          |
+|    acto_critic_loss | -5.18    |
+|    bc_loss          | 0.00571  |
+|    critic_loss      | 0.0708   |
+|    learning_rate    | 0.001    |
+|    n_updates        | 15015    |
+|    sl_loss          | 0.0503   |
+|    sl_weight        | 0.961    |
+----------------------------------
+RolloutReturn(episode_reward=262.716, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=266.67566, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=275.02924, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=275.27612, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 195      |
+| time/               |          |
+|    episodes         | 24       |
+|    fps              | 49       |
+|    time_elapsed     | 485      |
+|    total timesteps  | 24024    |
+| train/              |          |
+|    acto_critic_loss | -6.74    |
+|    bc_loss          | 0.00542  |
+|    critic_loss      | 0.103    |
+|    learning_rate    | 0.001    |
+|    n_updates        | 19019    |
+|    sl_loss          | 0.0502   |
+|    sl_weight        | 0.953    |
+----------------------------------
+collecting rollout for learning
+RolloutReturn(episode_reward=780.8414, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=870.0311, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=853.885, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 1e+03    |
+|    ep_rew_mean     | 850      |
+| time/              |          |
+|    episodes        | 4        |
+|    fps             | 389      |
+|    time_elapsed    | 10       |
+|    total timesteps | 4004     |
+---------------------------------
+RolloutReturn(episode_reward=896.2915, episode_timesteps=1001, n_episodes=1, continue_training=True)
+collecting rollout for learning
+RolloutReturn(episode_reward=865.15875, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=346.0229, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=261.07907, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 683      |
+| time/               |          |
+|    episodes         | 8        |
+|    fps              | 86       |
+|    time_elapsed     | 92       |
+|    total timesteps  | 8008     |
+| train/              |          |
+|    acto_critic_loss | -5.31    |
+|    bc_loss          | 0.00734  |
+|    critic_loss      | 0.763    |
+|    learning_rate    | 0.001    |
+|    n_updates        | 3003     |
+|    sl_loss          | 0.065    |
+|    sl_weight        | 0.985    |
+----------------------------------
+RolloutReturn(episode_reward=590.9623, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=505.04865, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=763.946, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=572.15125, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 635      |
+| time/               |          |
+|    episodes         | 12       |
+|    fps              | 62       |
+|    time_elapsed     | 193      |
+|    total timesteps  | 12012    |
+| train/              |          |
+|    acto_critic_loss | -17.3    |
+|    bc_loss          | 0.00734  |
+|    critic_loss      | 3.27     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 7007     |
+|    sl_loss          | 0.101    |
+|    sl_weight        | 0.977    |
+----------------------------------
+RolloutReturn(episode_reward=317.42517, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=291.88626, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=503.5719, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=250.77902, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 546      |
+| time/               |          |
+|    episodes         | 16       |
+|    fps              | 51       |
+|    time_elapsed     | 309      |
+|    total timesteps  | 16016    |
+| train/              |          |
+|    acto_critic_loss | -29.5    |
+|    bc_loss          | 0.00841  |
+|    critic_loss      | 3.48     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 11011    |
+|    sl_loss          | 0.0979   |
+|    sl_weight        | 0.969    |
+----------------------------------
+RolloutReturn(episode_reward=62.87203, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=227.27058, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=659.05695, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=711.8713, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 548      |
+| time/               |          |
+|    episodes         | 20       |
+|    fps              | 48       |
+|    time_elapsed     | 416      |
+|    total timesteps  | 20020    |
+| train/              |          |
+|    acto_critic_loss | -34      |
+|    bc_loss          | 0.00689  |
+|    critic_loss      | 3.77     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 15015    |
+|    sl_loss          | 0.0974   |
+|    sl_weight        | 0.961    |
+----------------------------------
+RolloutReturn(episode_reward=633.29425, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=236.10684, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=253.75604, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=674.02734, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 529      |
+| time/               |          |
+|    episodes         | 24       |
+|    fps              | 46       |
+|    time_elapsed     | 516      |
+|    total timesteps  | 24024    |
+| train/              |          |
+|    acto_critic_loss | -38.2    |
+|    bc_loss          | 0.00797  |
+|    critic_loss      | 4.35     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 19019    |
+|    sl_loss          | 0.102    |
+|    sl_weight        | 0.953    |
+----------------------------------
+RolloutReturn(episode_reward=576.4931, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=559.50507, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=446.9494, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=577.39764, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 519      |
+| time/               |          |
+|    episodes         | 28       |
+|    fps              | 45       |
+|    time_elapsed     | 622      |
+|    total timesteps  | 28028    |
+| train/              |          |
+|    acto_critic_loss | -38.6    |
+|    bc_loss          | 0.00716  |
+|    critic_loss      | 4.39     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 23023    |
+|    sl_loss          | 0.0978   |
+|    sl_weight        | 0.945    |
+----------------------------------
+RolloutReturn(episode_reward=243.08289, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=645.1579, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=385.6882, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=659.12036, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 522      |
+| time/               |          |
+|    episodes         | 32       |
+|    fps              | 44       |
+|    time_elapsed     | 726      |
+|    total timesteps  | 32032    |
+| train/              |          |
+|    acto_critic_loss | -39.5    |
+|    bc_loss          | 0.00771  |
+|    critic_loss      | 4.18     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 27027    |
+|    sl_loss          | 0.102    |
+|    sl_weight        | 0.937    |
+----------------------------------
+RolloutReturn(episode_reward=489.8158, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=452.73712, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=605.82947, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=638.2485, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 532      |
+| time/               |          |
+|    episodes         | 36       |
+|    fps              | 43       |
+|    time_elapsed     | 826      |
+|    total timesteps  | 36036    |
+| train/              |          |
+|    acto_critic_loss | -39.3    |
+|    bc_loss          | 0.00744  |
+|    critic_loss      | 3.57     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 31031    |
+|    sl_loss          | 0.101    |
+|    sl_weight        | 0.93     |
+----------------------------------
+RolloutReturn(episode_reward=728.51965, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=675.8554, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=682.51245, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=607.2785, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 548      |
+| time/               |          |
+|    episodes         | 40       |
+|    fps              | 42       |
+|    time_elapsed     | 937      |
+|    total timesteps  | 40040    |
+| train/              |          |
+|    acto_critic_loss | -38.8    |
+|    bc_loss          | 0.00758  |
+|    critic_loss      | 3.56     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 35035    |
+|    sl_loss          | 0.0996   |
+|    sl_weight        | 0.923    |
+----------------------------------
+RolloutReturn(episode_reward=801.531, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=310.869, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=665.21704, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=446.90503, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 539      |
+| time/               |          |
+|    episodes         | 44       |
+|    fps              | 42       |
+|    time_elapsed     | 1044     |
+|    total timesteps  | 44044    |
+| train/              |          |
+|    acto_critic_loss | -38.8    |
+|    bc_loss          | 0.00788  |
+|    critic_loss      | 3.35     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 39039    |
+|    sl_loss          | 0.103    |
+|    sl_weight        | 0.915    |
+----------------------------------
+RolloutReturn(episode_reward=393.06442, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=661.764, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=668.136, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=708.3582, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 551      |
+| time/               |          |
+|    episodes         | 48       |
+|    fps              | 42       |
+|    time_elapsed     | 1142     |
+|    total timesteps  | 48048    |
+| train/              |          |
+|    acto_critic_loss | -38.3    |
+|    bc_loss          | 0.00787  |
+|    critic_loss      | 3.26     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 43043    |
+|    sl_loss          | 0.0991   |
+|    sl_weight        | 0.908    |
+----------------------------------
+RolloutReturn(episode_reward=695.8489, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=602.25104, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=693.0343, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=215.07983, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 538      |
+| time/               |          |
+|    episodes         | 52       |
+|    fps              | 41       |
+|    time_elapsed     | 1242     |
+|    total timesteps  | 52052    |
+| train/              |          |
+|    acto_critic_loss | -38.4    |
+|    bc_loss          | 0.00868  |
+|    critic_loss      | 3.61     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 47047    |
+|    sl_loss          | 0.11     |
+|    sl_weight        | 0.901    |
+----------------------------------
+RolloutReturn(episode_reward=0.13556583, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.02563044, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.018338164, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.011032716, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+----------------------------------
+| rollout/            |          |
+|    ep_len_mean      | 1e+03    |
+|    ep_rew_mean      | 499      |
+| time/               |          |
+|    episodes         | 56       |
+|    fps              | 41       |
+|    time_elapsed     | 1341     |
+|    total timesteps  | 56056    |
+| train/              |          |
+|    acto_critic_loss | -132     |
+|    bc_loss          | 0.109    |
+|    critic_loss      | 43.9     |
+|    learning_rate    | 0.001    |
+|    n_updates        | 51051    |
+|    sl_loss          | 0.674    |
+|    sl_weight        | 0.894    |
+----------------------------------
+RolloutReturn(episode_reward=0.12456312, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.09141131, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.06471095, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.10633782, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 466       |
+| time/               |           |
+|    episodes         | 60        |
+|    fps              | 41        |
+|    time_elapsed     | 1459      |
+|    total timesteps  | 60060     |
+| train/              |           |
+|    acto_critic_loss | -1.08e+03 |
+|    bc_loss          | 0.464     |
+|    critic_loss      | 2.06e+03  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 55055     |
+|    sl_loss          | 0.805     |
+|    sl_weight        | 0.888     |
+-----------------------------------
+RolloutReturn(episode_reward=0.6397198, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.18747243, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.8719833, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.4056508, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 437       |
+| time/               |           |
+|    episodes         | 64        |
+|    fps              | 40        |
+|    time_elapsed     | 1571      |
+|    total timesteps  | 64064     |
+| train/              |           |
+|    acto_critic_loss | -4.28e+03 |
+|    bc_loss          | 0.516     |
+|    critic_loss      | 2.86e+04  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 59059     |
+|    sl_loss          | 0.755     |
+|    sl_weight        | 0.881     |
+-----------------------------------
+RolloutReturn(episode_reward=0.45073336, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.20228478, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.31437415, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.14263745, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 411       |
+| time/               |           |
+|    episodes         | 68        |
+|    fps              | 40        |
+|    time_elapsed     | 1689      |
+|    total timesteps  | 68068     |
+| train/              |           |
+|    acto_critic_loss | -1.41e+04 |
+|    bc_loss          | 0.407     |
+|    critic_loss      | 3.58e+05  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 63063     |
+|    sl_loss          | 0.666     |
+|    sl_weight        | 0.875     |
+-----------------------------------
+RolloutReturn(episode_reward=0.79458374, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.18040904, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.7383974, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.23624578, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 388       |
+| time/               |           |
+|    episodes         | 72        |
+|    fps              | 40        |
+|    time_elapsed     | 1792      |
+|    total timesteps  | 72072     |
+| train/              |           |
+|    acto_critic_loss | -4.13e+04 |
+|    bc_loss          | 0.333     |
+|    critic_loss      | 3.5e+06   |
+|    learning_rate    | 0.001     |
+|    n_updates        | 67067     |
+|    sl_loss          | 0.634     |
+|    sl_weight        | 0.868     |
+-----------------------------------
+RolloutReturn(episode_reward=1.5613159, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.43067503, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.44770756, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=1.8950958, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 368       |
+| time/               |           |
+|    episodes         | 76        |
+|    fps              | 40        |
+|    time_elapsed     | 1900      |
+|    total timesteps  | 76076     |
+| train/              |           |
+|    acto_critic_loss | -9.09e+04 |
+|    bc_loss          | 0.37      |
+|    critic_loss      | 1.66e+07  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 71071     |
+|    sl_loss          | 0.717     |
+|    sl_weight        | 0.862     |
+-----------------------------------
+RolloutReturn(episode_reward=0.2250896, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.79437333, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.23762056, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=1.6440021, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 350       |
+| time/               |           |
+|    episodes         | 80        |
+|    fps              | 39        |
+|    time_elapsed     | 2005      |
+|    total timesteps  | 80080     |
+| train/              |           |
+|    acto_critic_loss | -1.46e+05 |
+|    bc_loss          | 0.385     |
+|    critic_loss      | 4.59e+07  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 75075     |
+|    sl_loss          | 0.758     |
+|    sl_weight        | 0.855     |
+-----------------------------------
+RolloutReturn(episode_reward=1.1928381, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=1.6542252, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.32306272, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.3731399, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 333       |
+| time/               |           |
+|    episodes         | 84        |
+|    fps              | 39        |
+|    time_elapsed     | 2115      |
+|    total timesteps  | 84084     |
+| train/              |           |
+|    acto_critic_loss | -1.73e+05 |
+|    bc_loss          | 0.294     |
+|    critic_loss      | 5.54e+07  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 79079     |
+|    sl_loss          | 0.763     |
+|    sl_weight        | 0.849     |
+-----------------------------------
+RolloutReturn(episode_reward=0.02000459, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.023268454, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.038510457, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.019633383, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+-----------------------------------
+| rollout/            |           |
+|    ep_len_mean      | 1e+03     |
+|    ep_rew_mean      | 318       |
+| time/               |           |
+|    episodes         | 88        |
+|    fps              | 39        |
+|    time_elapsed     | 2219      |
+|    total timesteps  | 88088     |
+| train/              |           |
+|    acto_critic_loss | -2.08e+05 |
+|    bc_loss          | 0.438     |
+|    critic_loss      | 7.71e+07  |
+|    learning_rate    | 0.001     |
+|    n_updates        | 83083     |
+|    sl_loss          | 0.884     |
+|    sl_weight        | 0.843     |
+-----------------------------------
+RolloutReturn(episode_reward=0.01845134, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.05204758, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.012547255, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
+RolloutReturn(episode_reward=0.04833603, episode_timesteps=1001, n_episodes=1, continue_training=True)
+update
+collecting rollout for learning
