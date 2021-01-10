@@ -87,7 +87,7 @@ class TD3(OffPolicyAlgorithm):
         device: Union[th.device, str]="cpu",
         _init_setup_model: bool = True,
         rewarder=None,
-        reward_type='RED'  # 'pwil', 'w2_dist'
+        reward_type='pwil'  # 'pwil', 'w2_dist'
     ):
 
         super(TD3, self).__init__(
@@ -135,7 +135,7 @@ class TD3(OffPolicyAlgorithm):
         self.critic_target = self.policy.critic_target
 
     def train(self, gradient_steps: int, batch_size: int = 100, update_actor=False, weight_factor=0) -> None:
-        print('update')
+        # print('update')
         # Update learning rate according to lr schedule
         self._update_learning_rate([self.actor.optimizer, self.critic.optimizer])
 
@@ -149,7 +149,7 @@ class TD3(OffPolicyAlgorithm):
             buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
             if len(buffers) > 1:
                 replay_data, ideal_replay_data, combined_replay_data = buffers[0], buffers[1], buffers[2]
-                ideal_data = True
+                ideal_data = False
                 sl_id, (bc_obs, bc_acts) = random.choice(self.sl_dataset.enums)
 
             else:
@@ -211,7 +211,7 @@ class TD3(OffPolicyAlgorithm):
                 else:
                     bc_loss = sum([F.mse_loss(bc_acts.float(), self.actor(bc_obs.float()))])
                     bc_losses.append(bc_loss.item())
-                    hybrid_loss = 1 * actor_loss + 0. * bc_loss
+                    hybrid_loss = 0. * actor_loss + 0 * bc_loss
 
                     logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
                     logger.record("train/acto_critic_loss", np.mean(actor_losses))

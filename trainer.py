@@ -20,7 +20,7 @@ from absl import flags
 from acme import specs
 
 import imitation_loop
-import rewarder
+import rewarder.rewarder as rewarder
 import utils
 
 from core.TD3 import TD3
@@ -31,6 +31,7 @@ import numpy as np
 from stable_baselines3.common import logger
 
 import gym
+from gym.wrappers.time_limit import TimeLimit
 
 flags.DEFINE_string('workdir', None, 'Logging directory')
 flags.DEFINE_string('env_name', None, 'Environment name.')
@@ -40,7 +41,7 @@ flags.DEFINE_boolean('state_only', False,
 flags.DEFINE_float('sigma', 0.2, 'Exploration noise.')
 flags.DEFINE_integer('num_transitions_rb', 80,
                      'Number of transitions to fill the rb with.')
-flags.DEFINE_integer('num_demonstrations', 20, 'Number of expert episodes.')
+flags.DEFINE_integer('num_demonstrations', 50, 'Number of expert episodes.')
 flags.DEFINE_integer('subsampling', 1, 'Subsampling factor of demonstrations.')
 flags.DEFINE_integer('random_seed', 1, 'Experiment random seed.')
 flags.DEFINE_integer('num_steps_per_iteration', 10000000000,
@@ -54,7 +55,7 @@ flags.DEFINE_float('critic_learning_rate', 1e-4,
                    'Larning rate for critic updates')
 
 flags.DEFINE_string('original_trainer_type', 'False', 'Directory of expert demonstrations.')
-flags.DEFINE_integer('ep_steps', 300, 'envionrment ep running steps')
+flags.DEFINE_integer('ep_steps', 1000, 'envionrment ep running steps')
 
 FLAGS = flags.FLAGS
 
@@ -66,7 +67,7 @@ def main(_):
     from core.customized_env import CustomizedEnv
     # If the environment don't follow the interface, an error will be thrown
 
-    #real_environment = utils.load_environment(FLAGS.env_name, max_episode_steps=FLAGS.ep_steps)
+    # real_environment = utils.load_environment(FLAGS.env_name, max_episode_steps=FLAGS.ep_steps)
     # environment = DummyVecEnv([environment])
     # Create Rewarder.
 
@@ -90,45 +91,54 @@ def main(_):
         observation_only=FLAGS.state_only)
     spec_rewarder = rewarder.REDRewarder(demonstrations, environment_spec[1],
                                          environment_spec[0], 128, state_only=FLAGS.state_only)
-    spec_rewarder.train_rewarder()
+    spec_rewarder.train_rewarder(iter_epochs=0)
 
     # Load environment.
     # environment = utils.load_state_customized_environment(
     #    FLAGS.demo_dir, FLAGS.env_name, rewarder=pwil_rewarder, max_episode_steps=FLAGS.ep_steps)
-
+   # """
     environment = gym.make(FLAGS.env_name)
+    environment = TimeLimit(environment, max_episode_steps=FLAGS.ep_steps)
 
     n_actions = environment.action_space.shape[-1]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
+    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.4 * np.ones(n_actions))
     # define cutomized td3
     model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
-                rewarder=pwil_rewarder,
-                reward_type='pwil',
-                train_freq=800)
+                rewarder=pwil_rewarder,  # spec_rewarder,
+                reward_type='pwil',)
 
     # load expert supervised dataset
-    sl_loader = utils.GT_dataset(demonstrations, environment)
+    sl_dataset = utils.GT_dataset(demonstrations, environment)
+    model.sl_dataset = sl_dataset
+    model.value_dataset = utils.VALUE_dataset(demonstrations)
+    model.use_acceleration = True
 
     # pretrain the actor using behaviour cloning
-    model.pretrain_actor_using_demo(sl_loader, epochs=0)
-    #"""
+    model.pretrain_actor_using_demo(sl_dataset, epochs=300)
 
-    model.sample_trajs(n_episodes=1)
-    model.pretrain_critic_using_demo()
-    model.learn(total_timesteps=1000000)
+    model.sample_trajs(n_episodes=2)
+    # model.pretrain_critic_using_demo()
+    model.learn(total_timesteps=1e6)
 
     print("Logger outputs after training:", logger.Logger.CURRENT.output_formats)
 
-    #"""
+    from datetime import date
+
+    today = date.today()
+    print('weights/' + FLAGS.env_name + today.strftime("%b-%d-%Y"))
+    model.save('weights/' + FLAGS.env_name + '_state_' + str(FLAGS.state_only) + '_' + today.strftime("%b-%d-%Y"))
+
+   # """
     # train model
-    #from stable_baselines3 import TD3
- # MountainCarContinuous-v0 LunarLanderContinuous-v2
-    env = gym.make('Pendulum-v0')
-    env._max_episode_steps = 500
+    # from stable_baselines3 import TD3
+    # MountainCarContinuous-v0 LunarLanderContinuous-v2
+    """
+    env = gym.make('Hopper-v2')
+    env._max_episode_steps = 1000
 
     n_actions = env.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-    model = TD3('MlpPolicy', env, action_noise=action_noise, verbose=1, rewarder=pwil_rewarder)
+    model = TD3('MlpPolicy', env, action_noise=action_noise, verbose=1)
     model.learn(total_timesteps=1000000)
 
     obs = env.reset()
@@ -152,6 +162,7 @@ def main(_):
             rs += rewards
         print(rs)
     env.close()
+    """
 
 
 if __name__ == '__main__':
