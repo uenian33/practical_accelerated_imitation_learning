@@ -20,7 +20,7 @@ from absl import flags
 from acme import specs
 
 import imitation_loop
-import rewarder.rewarder as rewarder
+import rewarder
 import utils
 
 from core.TD3 import TD3
@@ -41,7 +41,7 @@ flags.DEFINE_boolean('state_only', False,
 flags.DEFINE_float('sigma', 0.2, 'Exploration noise.')
 flags.DEFINE_integer('num_transitions_rb', 80,
                      'Number of transitions to fill the rb with.')
-flags.DEFINE_integer('num_demonstrations', 50, 'Number of expert episodes.')
+flags.DEFINE_integer('num_demonstrations', 20, 'Number of expert episodes.')
 flags.DEFINE_integer('subsampling', 1, 'Subsampling factor of demonstrations.')
 flags.DEFINE_integer('random_seed', 1, 'Experiment random seed.')
 flags.DEFINE_integer('num_steps_per_iteration', 10000000000,
@@ -55,7 +55,7 @@ flags.DEFINE_float('critic_learning_rate', 1e-4,
                    'Larning rate for critic updates')
 
 flags.DEFINE_string('original_trainer_type', 'False', 'Directory of expert demonstrations.')
-flags.DEFINE_integer('ep_steps', 1000, 'envionrment ep running steps')
+flags.DEFINE_integer('ep_steps', 300, 'envionrment ep running steps')
 
 FLAGS = flags.FLAGS
 
@@ -89,34 +89,33 @@ def main(_):
         env_specs=environment_spec,
         num_demonstrations=FLAGS.num_demonstrations,
         observation_only=FLAGS.state_only)
-    spec_rewarder = rewarder.REDRewarder(demonstrations, environment_spec[1],
-                                         environment_spec[0], 128, state_only=FLAGS.state_only)
-    spec_rewarder.train_rewarder(iter_epochs=0)
+    # spec_rewarder = rewarder.REDRewarder(demonstrations, environment_spec[1],
+    #                                     environment_spec[0], 128, state_only=FLAGS.state_only)
+    # spec_rewarder.train_rewarder()
 
     # Load environment.
     # environment = utils.load_state_customized_environment(
     #    FLAGS.demo_dir, FLAGS.env_name, rewarder=pwil_rewarder, max_episode_steps=FLAGS.ep_steps)
    # """
     environment = gym.make(FLAGS.env_name)
-    environment = TimeLimit(environment, max_episode_steps=FLAGS.ep_steps)
+    environment = TimeLimit(environment, max_episode_steps=1000)
 
     n_actions = environment.action_space.shape[-1]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.4 * np.ones(n_actions))
+    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
     # define cutomized td3
     model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
-                rewarder=pwil_rewarder,  # spec_rewarder,
+                rewarder=pwil_rewarder,
                 reward_type='pwil',)
 
     # load expert supervised dataset
     sl_dataset = utils.GT_dataset(demonstrations, environment)
+
+    # pretrain the actor using behaviour cloning
     model.sl_dataset = sl_dataset
     model.value_dataset = utils.VALUE_dataset(demonstrations)
     model.use_acceleration = True
 
-    # pretrain the actor using behaviour cloning
-    model.pretrain_actor_using_demo(sl_dataset, epochs=300)
-
-    model.sample_trajs(n_episodes=2)
+    # model.sample_trajs(n_episodes=1)
     # model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6)
 

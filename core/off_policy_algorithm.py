@@ -139,7 +139,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
         self.rewarder = rewarder
         self.reward_type = reward_type
-        # print(rewarder, reward_type)
+        #print(rewarder, reward_type)
         # time.sl()
 
         if train_freq > 0 and n_episodes_rollout > 0:
@@ -160,10 +160,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         # For gSDE only
         self.use_sde_at_warmup = use_sde_at_warmup
 
-        # cusomized varaialbles for acclerating imitation
-        # sl_dataset: bc dataset
-        # value dataset: for estimating suboptimal trajs
-        # use_acceleration: decide if use accleration
         self.sl_dataset = None
         self.value_dataset = None
         self.use_acceleration = False
@@ -266,7 +262,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
         while self.num_timesteps < total_timesteps:
             print('collecting rollout for learning')
-
             if not self.use_acceleration:
                 rollout = self.collect_rollouts(
                     self.env,
@@ -290,6 +285,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     log_interval=log_interval,
                 )
                 self.value_dataset.create_suboptimal_value_datasets_from_trajectories(trajectories)
+
             print(rollout)
 
             if rollout.continue_training is False:
@@ -657,7 +653,8 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     use_ideal = True
                     new_obs, reward, done_, infos = env.step(action)
 
-                    # if total_episodes % 1 == 0:
+                    if total_episodes % 10 == 0:
+                        env.render()
                     # print(infos[0]['ideal_tuple'][0])
                     ideal_pre_obs = infos[0]['ideal_tuple'][0]
                     ideal_action = infos[0]['ideal_tuple'][1]
@@ -671,7 +668,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     use_ideal = False
                     new_obs, reward, done, infos = env.step(action)
 
-                env.render()
                 try:
                     done = done_[0]
                 except:
@@ -954,27 +950,44 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         callback.on_rollout_start()
         continue_training = True
 
-        while total_steps < n_steps or total_episodes < n_episodes:
+        while total_steps < env.max_episode_steps:
+            print(total_steps, env.max_episode_steps)
             done = False
-            episode_reward, episode_timesteps, original_episode_reward = 0.0, 0, 0.0
+            episode_reward, episode_timesteps = 0.0, 0
 
             while not done:
+
                 if self.use_sde and self.sde_sample_freq > 0 and total_steps % self.sde_sample_freq == 0:
                     # Sample a new noise matrix
                     self.actor.reset_noise()
 
                 # Select action randomly or according to policy
                 action, buffer_action = self._sample_action(learning_starts, action_noise)
+                # print(action)
 
                 # Rescale and perform action
-                new_obs, origin_reward, done, infos = env.step(action)
-                env.render()
-                obs_act = {'observation': self._last_obs[0], 'action': buffer_action[0]}
-                imitation_reward = self.rewarder.get_reward(self._last_obs,
-                                                            buffer_action,
-                                                            new_obs).detach().numpy()[0]
-
-                reward = imitation_reward
+                try:
+                    use_ideal = True
+                    new_obs, __, done, infos = env.step(action)
+                    if total_episodes % 10 == 1:
+                        env.render()
+                    # print(infos[0]['ideal_tuple'][0])
+                    ideal_pre_obs = infos[0]['ideal_tuple'][0]
+                    ideal_action = infos[0]['ideal_tuple'][1]
+                    ideal_next_obs = infos[0]['ideal_tuple'][2]
+                    ideal_reward = infos[0]['ideal_tuple'][3]
+                    ideal_done = infos[0]['ideal_tuple'][4]
+                    # print(new_obs - pre_obs)
+                    ideal_action, ideal_buffer_action = self._sample_action(0, predefined_action=ideal_action, action_noise=None)
+                    reward = self.rewarder.get_reward(self._last_obs,
+                                                      buffer_action,
+                                                      new_obs).detach().numpy()[0]
+                except:
+                    use_ideal = False
+                    new_obs, reward, done, infos = env.step(action)
+                    reward = self.rewarder.get_reward(self._last_obs,
+                                                      buffer_action,
+                                                      new_obs).detach().numpy()[0]
 
                 self.num_timesteps += 1
                 episode_timesteps += 1
@@ -987,7 +1000,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     return RolloutReturn(0.0, total_steps, total_episodes, continue_training=False)
 
                 episode_reward += reward
-                original_episode_reward += origin_reward
 
                 # Retrieve reward and episode length if using Monitor wrapper
                 self._update_info_buffer(infos, done)
@@ -996,6 +1008,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 if replay_buffer is not None:
                     # Store only the unnormalized version
                     if self._vec_normalize_env is not None:
+                        print('not none')
                         new_obs_ = self._vec_normalize_env.get_original_obs()
                         reward_ = self._vec_normalize_env.get_original_reward()
                     else:
@@ -1003,8 +1016,13 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                         # Avoid changing the original ones
                         self._last_original_obs, new_obs_, reward_ = self._last_obs, new_obs, reward
 
-                    replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, reward_,
-                                      done, None, None, None, None, None, use_ideal=False)
+                    if use_ideal:
+                        replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, reward_, done,
+                                          ideal_obs=ideal_pre_obs, ideal_next_obs=ideal_next_obs, ideal_action=ideal_buffer_action,
+                                          ideal_reward=ideal_reward, ideal_done=done)
+                    else:
+                        replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, reward_,
+                                          done, None, None, None, None, None, use_ideal=False)
 
                 self._last_obs = new_obs
                 # Save the unnormalized observation
@@ -1022,25 +1040,18 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 if 0 < n_steps <= total_steps:
                     break
 
-                if self.num_timesteps > 1000 and self.num_timesteps > self.learning_starts:
-                    # If no `gradient_steps` is specified,
-                    # do as many gradients steps as steps performed during the rollout
-                    self.train(batch_size=self.batch_size, gradient_steps=1,
-                               update_actor=True, weight_factor=self.num_timesteps % 1000)
+            print('done', total_steps, n_steps, total_episodes, n_episodes)
+            total_episodes += 1
+            self._episode_num += 1
+            episode_rewards.append(episode_reward)
+            total_timesteps.append(episode_timesteps)
 
-            if done:
-                total_episodes += 1
-                self._episode_num += 1
-                episode_rewards.append(episode_reward)
-                total_timesteps.append(episode_timesteps)
+            if action_noise is not None:
+                action_noise.reset()
 
-                if action_noise is not None:
-                    action_noise.reset()
-
-                # Log training infos
-                if log_interval is not None and self._episode_num % log_interval == 0:
-                    self._dump_logs()
-                print(episode_rewards, original_episode_reward, total_steps, total_episodes, continue_training)
+            # Log training infos
+            if log_interval is not None and self._episode_num % log_interval == 0:
+                self._dump_logs()
 
         mean_reward = np.mean(episode_rewards) if total_episodes > 0 else 0.0
 

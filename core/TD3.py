@@ -149,7 +149,7 @@ class TD3(OffPolicyAlgorithm):
             buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
             if len(buffers) > 1:
                 replay_data, ideal_replay_data, combined_replay_data = buffers[0], buffers[1], buffers[2]
-                ideal_data = False
+                ideal_data = True
                 sl_id, (bc_obs, bc_acts) = random.choice(self.sl_dataset.enums)
 
             else:
@@ -211,7 +211,7 @@ class TD3(OffPolicyAlgorithm):
                 else:
                     bc_loss = sum([F.mse_loss(bc_acts.float(), self.actor(bc_obs.float()))])
                     bc_losses.append(bc_loss.item())
-                    hybrid_loss = 0. * actor_loss + 0 * bc_loss
+                    hybrid_loss = 1 * actor_loss + 0. * bc_loss
 
                     logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
                     logger.record("train/acto_critic_loss", np.mean(actor_losses))
