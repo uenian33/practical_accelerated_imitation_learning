@@ -116,7 +116,8 @@ def main(_):
     model.use_acceleration = True
 
     # model.sample_trajs(n_episodes=1)
-    # model.pretrain_critic_using_demo()
+    model.pretrain_critic_using_demo()
+    model._setup_model()
     model.learn(total_timesteps=1e6)
 
     print("Logger outputs after training:", logger.Logger.CURRENT.output_formats)
