@@ -20,7 +20,7 @@ from absl import flags
 from acme import specs
 
 import imitation_loop
-import rewarder
+import rewarder.rewarder as rewarder
 import utils
 
 from core.TD3 import TD3
@@ -83,16 +83,6 @@ def main(_):
 
     environment_spec = [demonstrations[0][0]['action'].shape[0], demonstrations[0][0]['observation'].shape[0]]
 
-    pwil_rewarder = rewarder.PWILRewarder(
-        demonstrations,
-        subsampling=FLAGS.subsampling,
-        env_specs=environment_spec,
-        num_demonstrations=FLAGS.num_demonstrations,
-        observation_only=FLAGS.state_only)
-    # spec_rewarder = rewarder.REDRewarder(demonstrations, environment_spec[1],
-    #                                     environment_spec[0], 128, state_only=FLAGS.state_only)
-    # spec_rewarder.train_rewarder()
-
     # Load environment.
     # environment = utils.load_state_customized_environment(
     #    FLAGS.demo_dir, FLAGS.env_name, rewarder=pwil_rewarder, max_episode_steps=FLAGS.ep_steps)
@@ -102,22 +92,33 @@ def main(_):
 
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
-    # define cutomized td3
-    model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
-                rewarder=pwil_rewarder,
-                reward_type='pwil',)
 
     # load expert supervised dataset
     sl_dataset = utils.GT_dataset(demonstrations, environment)
+    value_dataset = utils.VALUE_dataset(demonstrations)
+    use_acceleration = True
+    pwil_rewarder = rewarder.PWILRewarder(
+        demonstrations,
+        subsampling=FLAGS.subsampling,
+        env_specs=environment_spec,
+        num_demonstrations=FLAGS.num_demonstrations,
+        observation_only=FLAGS.state_only)
+    sa_classifier = rewarder.REDRewarder(demonstrations, environment_spec[1],
+                                         environment_spec[0], 32, state_only=FLAGS.state_only)
+    sa_classifier.train_rewarder()
+    sa_classifier.eval_rewarder()
 
-    # pretrain the actor using behaviour cloning
-    model.sl_dataset = sl_dataset
-    model.value_dataset = utils.VALUE_dataset(demonstrations)
-    model.use_acceleration = True
+    # define cutomized td3
+    model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
+                rewarder=pwil_rewarder,
+                reward_type='pwil',
+                sl_dataset=sl_dataset,
+                value_dataset=value_dataset,
+                use_acceleration=use_acceleration,
+                expert_classifier=sa_classifier)
 
     # model.sample_trajs(n_episodes=1)
-    model.pretrain_critic_using_demo()
-    model._setup_model()
+    # model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6)
 
     print("Logger outputs after training:", logger.Logger.CURRENT.output_formats)

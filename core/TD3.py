@@ -87,7 +87,12 @@ class TD3(OffPolicyAlgorithm):
         device: Union[th.device, str]="cpu",
         _init_setup_model: bool = True,
         rewarder=None,
-        reward_type='pwil'  # 'pwil', 'w2_dist'
+        reward_type='pwil',  # 'pwil', 'w2_dist',
+        sl_dataset=None,
+        value_dataset=None,
+        use_acceleration=False,
+        expert_classifier=None,
+
     ):
 
         super(TD3, self).__init__(
@@ -120,7 +125,11 @@ class TD3(OffPolicyAlgorithm):
         self.rewarder = rewarder
         self.reward_type = reward_type
 
-        self.sl_dataset = None
+        self.sl_dataset = sl_dataset
+        self.value_dataset = value_dataset
+        self.use_acceleration = use_acceleration
+        self.expert_classifier = expert_classifier
+
         if _init_setup_model:
             self._setup_model()
 

@@ -103,7 +103,11 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         sde_support: bool = True,
         remove_time_limit_termination: bool = False,
         rewarder=None,
-        reward_type=None
+        reward_type=None,
+        sl_dataset=None,
+        value_dataset=None,
+        use_acceleration=False,
+        expert_classifier=None,
     ):
 
         super(OffPolicyAlgorithm, self).__init__(
@@ -159,10 +163,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             self.policy_kwargs["use_sde"] = self.use_sde
         # For gSDE only
         self.use_sde_at_warmup = use_sde_at_warmup
-
-        self.sl_dataset = None
-        self.value_dataset = None
-        self.use_acceleration = False
 
     def _setup_model(self) -> None:
         self._setup_lr_schedule()
@@ -284,7 +284,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     replay_buffer=self.replay_buffer,
                     log_interval=log_interval,
                 )
-                self.value_dataset.create_suboptimal_value_datasets_from_trajectories(trajectories)
+                # self.value_dataset.create_suboptimal_value_datasets_from_trajectories(trajectories)
 
             print(rollout)
 
@@ -1151,6 +1151,10 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, reward_,
                                       done, None, None, None, None, None, use_ideal=False)
                     traj.append([self._last_original_obs, buffer_action, new_obs_,  reward_, done])
+
+                # checking if current <s,a> or <s> belongs to expert trajs
+                if self.expert_classifier.predict_class(self._last_original_obs, buffer_action, new_obs_):
+                    print(' in exp')
 
                 self._last_obs = new_obs
                 # Save the unnormalized observation

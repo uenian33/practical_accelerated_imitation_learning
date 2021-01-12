@@ -305,11 +305,32 @@ class REDRewarder(object):
         self.rewarder = REDDiscriminator(state_size, action_size, hidden_size, state_only=state_only)
         self.dataset = REDDataset(demonstrations)
         self.discriminator_optimiser = optim.RMSprop(self.rewarder.parameters(), lr=learning_rate)
+        self.max_dis = 1
 
     def train_rewarder(self, iter_epochs=100, imitation_batch_size=128):
         for _ in tqdm(range(iter_epochs), leave=False):
             # Train predictor network to match random target network
             self.target_estimation_update(imitation_batch_size)
+
+    def eval_rewarder(self):
+        eval_dataloader = DataLoader(self.dataset, batch_size=self.dataset.__len__() - 1, shuffle=True, drop_last=True)
+        loss = nn.MSELoss(reduction='none')
+        #print(self.dataset.pair_number, eval_dataloader)
+        # print(list(enumerate(eval_dataloader)))
+        for idx, expert_transition in enumerate(eval_dataloader):
+            # print(idx)
+            # t.s()
+            expert_state, expert_action, expert_nect_state = expert_transition[
+                'states'], expert_transition['actions'], expert_transition['next_states']
+
+            self.discriminator_optimiser.zero_grad()
+            prediction, target = self.rewarder(expert_state, expert_action, expert_nect_state)
+            regression_loss = loss(prediction, target)
+
+            self.max_dis = torch.max(torch.sum(loss(prediction, target), dim=1)).detach().numpy()
+            print(self.max_dis)
+            #a = torch.randn(target.shape[0], target.shape[1])
+            #print(torch.sum(loss(a, target), dim=1))
 
     def get_reward(self, state, action, next_state):
         # try:
@@ -319,6 +340,9 @@ class REDRewarder(object):
         return self.rewarder.predict_reward(state, action, next_state)
         # except:
         #    return self.rewarder.predict_reward(state, action, next_state)
+
+    def predict_class(self):
+        return self.rewarder.predict_class_distance < self.max_dis
 
     def target_estimation_update(self, batch_size=128):
         expert_dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=True, drop_last=True)
@@ -331,8 +355,10 @@ class REDRewarder(object):
             prediction, target = self.rewarder(expert_state, expert_action, expert_nect_state)
             regression_loss = F.mse_loss(prediction, target)
             regression_loss.backward()
-            print
             self.discriminator_optimiser.step()
+
+    def add_new_data(self, state, action, next_state):
+        self.dataset.__add_new_data__(state, action, next_state)
 
 
 class REDDiscriminator(nn.Module):
@@ -364,8 +390,20 @@ class REDDiscriminator(nn.Module):
         # return _gaussian_kernel(F.pairwise_distance(prediction, target, p=2).pow(2), gamma=1e5)
         # return -1 + torch.exp(-1e5 * F.pairwise_distance(prediction, target, p=2).pow(2))
         mse = nn.MSELoss(reduction='none')
-        return -1 + torch.exp(-1e4 * torch.square(torch.sum(mse(prediction, target), dim=0)))
+        return torch.sum(mse(prediction, target), dim=0)
+        # return -1 + torch.exp(-1e4 * torch.square(torch.sum(mse(prediction, target), dim=0)))
     # Concatenates the state and one-hot version of an action
+
+    # TODO: Set sigma based such that r(s, a) from expert demonstrations ≈ 1
+    def predict_class_distance(self, state, action, next_state, sigma=1):
+        if self.state_only:
+            prediction, target = self.forward(state, action, next_state)
+        else:
+            prediction, target = self.forward(state, action, next_state)
+        # return _gaussian_kernel(F.pairwise_distance(prediction, target, p=2).pow(2), gamma=1e5)
+        # return -1 + torch.exp(-1e5 * F.pairwise_distance(prediction, target, p=2).pow(2))
+        mse = nn.MSELoss(reduction='none')
+        return torch.sum(mse(prediction, target), dim=0)
 
     def _join_state_action(self, state, action, action_size):
         # return torch.cat([state, F.one_hot(action, action_size).to(dtype=torch.float32)], dim=1)
@@ -383,6 +421,7 @@ class REDDataset(Dataset):
         self.actions = []
         self.terminals = []
         self.next_states = []
+        self.pair_number = 0
         for traj in transitions[:]:
             # print(traj)
             for idx, t in enumerate(traj):
@@ -408,11 +447,11 @@ class REDDataset(Dataset):
                     self.terminals.append(1)
                     self.next_states.append(tmp_states)
 
-        self.states = np.array(self.states)
-        self.actions = np.array(self.actions)
+        self.states = self.states
+        self.actions = self.actions
         self.terminals = np.array(self.terminals)
-        self.next_states = np.array(self.next_states)
-        print(self.terminals.size)
+        self.next_states = self.next_states
+        self.pair_number = self.terminals.size
 
         # self.states, self.actions= transitions['states'],
         # transitions['actions'].detach(), transitions['rewards'],
@@ -432,4 +471,11 @@ class REDDataset(Dataset):
             # terminals=self.terminals[idx])
 
     def __len__(self):
-        return self.terminals.size - 1  # Need to return state and next state
+        return self.pair_number - 1  # Need to return state and next state
+
+    def __add_new_data__(self, s, a, ns):
+        self.states.append(s)
+        self.actions.append(a)
+        self.next_states.append(ns)
+        self.pair_number = self.pair_number + 1
+        return
