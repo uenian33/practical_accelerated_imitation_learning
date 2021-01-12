@@ -341,7 +341,7 @@ class REDRewarder(object):
         # except:
         #    return self.rewarder.predict_reward(state, action, next_state)
 
-    def predict_class(self):
+    def predict_class(self, state, action, next_state,):
         return self.rewarder.predict_class_distance < self.max_dis
 
     def target_estimation_update(self, batch_size=128):
@@ -382,7 +382,7 @@ class REDDiscriminator(nn.Module):
         prediction, target = self.predictor(state_action), self.target(state_action)
         return prediction, target
 
-    def predict_reward(self, state, action, next_state, sigma=1):  # TODO: Set sigma based such that r(s, a) from expert demonstrations ≈ 1
+    def predict_reward(self, state, action, next_state):  # TODO: Set sigma based such that r(s, a) from expert demonstrations ≈ 1
         if self.state_only:
             prediction, target = self.forward(state, action, next_state)
         else:
