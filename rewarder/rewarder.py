@@ -342,8 +342,8 @@ class REDRewarder(object):
         #    return self.rewarder.predict_reward(state, action, next_state)
 
     def predict_class(self, state, action, next_state,):
-        print(self.rewarder.predict_class_distance().detach().numpy()[0], self.max_dis)
-        return self.rewarder.predict_class_distance().detach().numpy()[0] < self.max_dis
+        print(self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy()[0], self.max_dis)
+        return self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy()[0] < self.max_dis
 
     def target_estimation_update(self, batch_size=128):
         expert_dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=True, drop_last=True)
