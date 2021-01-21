@@ -160,6 +160,8 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
         self.actor = None  # type: Optional[th.nn.Module]
         self.replay_buffer = None  # type: Optional[ReplayBuffer]
+        self.constrained_replay_buffer = None  # type: Optional[ReplayBuffer]
+        self.expert_replay_buffer = None  # type: Optional[ReplayBuffer]
         # Update policy keyword arguments
         if sde_support:
             self.policy_kwargs["use_sde"] = self.use_sde
@@ -177,6 +179,13 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             optimize_memory_usage=self.optimize_memory_usage,
         )
         self.constrained_replay_buffer = ValueReplayBuffer(
+            self.buffer_size,
+            self.observation_space,
+            self.action_space,
+            self.device,
+            optimize_memory_usage=self.optimize_memory_usage,
+        )
+        self.expert_replay_buffer = ValueReplayBuffer(
             self.buffer_size,
             self.observation_space,
             self.action_space,

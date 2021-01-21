@@ -160,7 +160,7 @@ class TD3(OffPolicyAlgorithm):
             # Sample replay buffer
             ideal_data = False
             buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
-            constrained_replay_data = self.constrained_replay_buffer.sample(batch_size, env=self._vec_normalize_env)
+            constrained_replay_data = self.expert_replay_buffer.sample(batch_size, env=self._vec_normalize_env)
             if len(buffers) > 1:
                 replay_data, ideal_replay_data, combined_replay_data = buffers[0], buffers[1], buffers[2]
                 ideal_data = True
