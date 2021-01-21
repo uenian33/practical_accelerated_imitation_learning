@@ -92,6 +92,8 @@ class TD3(OffPolicyAlgorithm):
         value_dataset=None,
         use_acceleration=False,
         expert_classifier=None,
+        sub_Q_estimator=None,
+        opt_Q_estimator=None
 
     ):
 
@@ -129,6 +131,8 @@ class TD3(OffPolicyAlgorithm):
         self.value_dataset = value_dataset
         self.use_acceleration = use_acceleration
         self.expert_classifier = expert_classifier
+        self.sub_Q_estimator = sub_Q_estimator
+        self.opt_Q_estimator = opt_Q_estimator
 
         if _init_setup_model:
             self._setup_model()
@@ -156,6 +160,7 @@ class TD3(OffPolicyAlgorithm):
             # Sample replay buffer
             ideal_data = False
             buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
+            constrained_replay_data = self.constrained_replay_buffer.sample(batch_size, env=self._vec_normalize_env)
             if len(buffers) > 1:
                 replay_data, ideal_replay_data, combined_replay_data = buffers[0], buffers[1], buffers[2]
                 ideal_data = True
@@ -172,19 +177,54 @@ class TD3(OffPolicyAlgorithm):
                 noise = noise.clamp(-self.target_noise_clip, self.target_noise_clip)
                 next_actions = (self.actor_target(replay_data.next_observations) + noise).clamp(-1, 1)
 
-                tmp = self.critic_target(replay_data.next_observations.float(), next_actions.float())
-
                 # Compute the target Q value: min over all critics targets
                 targets = th.cat(self.critic_target(replay_data.next_observations.float(), next_actions.float()), dim=1)
                 target_q, _ = th.min(targets, dim=1, keepdim=True)
                 target_q = replay_data.rewards + (1 - replay_data.dones) * self.gamma * target_q
 
+                # Compute the target Q value: min over all critics targets
+                # also it is constrained by optimal_Q and suboptimal_Q
+                noise = constrained_replay_data.nth_actions.clone().data.normal_(0, self.target_policy_noise)
+                noise = noise.clamp(-self.target_noise_clip, self.target_noise_clip)
+                next_actions = (self.actor_target(constrained_replay_data.nth_observations) + noise).clamp(-1, 1)
+
+                #"""
+                targets2 = th.cat(self.critic_target(constrained_replay_data.nth_observations.float(), 
+                                                                next_actions.float()), dim=1)
+                target_q2, _ = th.min(targets2, dim=1, keepdim=True)
+                target_q2 = constrained_replay_data.rewards + constrained_replay_data.optimal_nstep_R + (1 - constrained_replay_data.dones) * self.gamma**10 * target_q2
+                #bigger_than_sub = (th.FloatTensor(constrained_replay_data.subopt_values) < target_q2).float()
+                #smaller_than_opt = (th.FloatTensor(constrained_replay_data.optimal_values) > target_q2).float()
+                #loss_mask = bigger_than_sub * smaller_than_opt
+
+                #"""
+                """
+                constrained_targets = th.cat(self.critic(constrained_replay_data.observations.float(), 
+                                                                constrained_replay_data.actions.float()), dim=1)
+                constrained_target_q, _ = th.min(constrained_targets, dim=1, keepdim=True)
+                constrained_target_subopt = th.cat((constrained_target_q, th.FloatTensor(constrained_replay_data.subopt_values)), dim=1)
+                constrained_target_subopt,_ = th.max(constrained_target_subopt, dim=1, keepdim=True)
+                constrained_target_optimal = th.cat((constrained_target_subopt, th.FloatTensor(constrained_replay_data.optimal_values)), dim=1)
+                constrained_target_optimal,_ = th.min(constrained_target_optimal, dim=1, keepdim=True)
+
+            critic_loss_constrained= sum([F.mse_loss(current_q, constrained_target_optimal) for current_q in constrained_current_q_estimates])
+                """
+                #print(constrained_target_optimal)
+
             # Get current Q estimates for each critic network
             current_q_estimates = self.critic(replay_data.observations.float(), replay_data.actions.float())
-           # print(replay_data.observations.float().shape)
-
             # Compute critic loss
-            critic_loss = sum([F.mse_loss(current_q, target_q) for current_q in current_q_estimates])
+            critic_loss_origin = sum([F.mse_loss(current_q, target_q) for current_q in current_q_estimates])
+
+            constrained_current_q_estimates  = self.critic(constrained_replay_data.observations.float(), constrained_replay_data.actions.float())
+            #critic_loss_expert1 = F.mse_loss(constrained_current_q_estimates[0]*loss_mask, target_q2*loss_mask)
+            #critic_loss_expert2 = F.mse_loss(constrained_current_q_estimates[1]*loss_mask, target_q2*loss_mask)
+            #critic_loss_expert = sum([critic_loss_expert1, critic_loss_expert2])
+            critic_loss_expert = sum([F.mse_loss(current_q, target_q2) for current_q in constrained_current_q_estimates])
+            #if critic_loss_expert > 0:
+            #    print(critic_loss_expert)
+           
+            critic_loss = critic_loss_origin + critic_loss_expert 
             critic_losses.append(critic_loss.item())
 
             # Optimize the critics

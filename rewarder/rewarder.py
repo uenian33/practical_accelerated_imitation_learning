@@ -165,6 +165,8 @@ class PWILRewarder(object):
             self.state_scaler.transform(self.vectorized_observations)
         )
         num_expert_atoms = len(self.expert_atoms)
+        #print('num_expert_atoms', num_expert_atoms)
+        # t()
         self.expert_weights = np.ones(num_expert_atoms) / (num_expert_atoms)
 
     def get_ideal_target_pair(self, obs_act, a_scaler):
@@ -227,7 +229,7 @@ class PWILRewarder(object):
             # Get closest expert state action to agent's state action.
             argmin = norms.argmin()
             expert_weight = self.expert_weights[argmin]
-            # print(self.expert_atoms[argmin])
+
             # Update cost and weights.
             if weight >= expert_weight:
                 weight -= expert_weight
@@ -327,8 +329,9 @@ class REDRewarder(object):
             prediction, target = self.rewarder(expert_state, expert_action, expert_nect_state)
             regression_loss = loss(prediction, target)
 
-            self.max_dis = torch.max(torch.sum(loss(prediction, target), dim=1)).detach().numpy()
-            print(self.max_dis)
+            self.max_dis = torch.max(torch.square(torch.sum(loss(prediction, target), dim=1))).detach().numpy()
+            # print(self.max_dis)
+            # t()
             #a = torch.randn(target.shape[0], target.shape[1])
             #print(torch.sum(loss(a, target), dim=1))
 
@@ -342,8 +345,12 @@ class REDRewarder(object):
         #    return self.rewarder.predict_reward(state, action, next_state)
 
     def predict_class(self, state, action, next_state,):
-        print(self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy()[0], self.max_dis)
-        return self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy()[0] < self.max_dis
+
+        state = torch.from_numpy(state)
+        action = torch.from_numpy(action)
+        next_state = torch.from_numpy(next_state)
+        print(self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy(), self.max_dis)
+        return self.rewarder.predict_class_distance(state, action, next_state,).detach().numpy() < self.max_dis
 
     def target_estimation_update(self, batch_size=128):
         expert_dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=True, drop_last=True)
@@ -403,8 +410,8 @@ class REDDiscriminator(nn.Module):
             prediction, target = self.forward(state, action, next_state)
         # return _gaussian_kernel(F.pairwise_distance(prediction, target, p=2).pow(2), gamma=1e5)
         # return -1 + torch.exp(-1e5 * F.pairwise_distance(prediction, target, p=2).pow(2))
-        mse = nn.MSELoss(reduction='none')
-        return torch.sum(mse(prediction, target), dim=0)
+        mse = nn.MSELoss()
+        return mse(prediction, target)
 
     def _join_state_action(self, state, action, action_size):
         # return torch.cat([state, F.one_hot(action, action_size).to(dtype=torch.float32)], dim=1)

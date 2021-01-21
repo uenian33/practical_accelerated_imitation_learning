@@ -18,6 +18,7 @@ echo ${store_path}
 
 state_only=True
 subsampling=20
+num_demonstrations=5
 
 python -m trainer \
 --workdir=${store_path} \
@@ -26,4 +27,6 @@ python -m trainer \
 --original_trainer_type=${original_trainer} \
 --state_only=$state_only \
 --ep_steps=$ep_steps \
---subsampling=$subsampling
+--subsampling=$subsampling \
+--num_demonstrations=$num_demonstrations
+
