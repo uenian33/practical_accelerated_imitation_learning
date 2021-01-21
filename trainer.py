@@ -64,15 +64,6 @@ from torchensemble import BaggingRegressor           # import ensemble method (e
 import torch
 import time
 
-# the path of saved objects
-pth_name = 'pkl/'+FLAGS.env_name + '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)
-bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
-sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
-bc_model_pkl_pth = pth_name + '_bc_model.pkl'
-suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
-value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
-ensemble_models_save_pth = 'pkl/ensemble_'+FLAGS.env_name+ '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)+'/'
-
 
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
     obs = environment.reset()
@@ -116,10 +107,11 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
 
 
 def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
-                            bc_dataset=None, 
-                            sa_classifier=None,
-                            bc_model=None,
-                            suboptimal_trajs=None):
+                             bc_dataset=None,
+                             sa_classifier=None,
+                             bc_model=None,
+                             suboptimal_trajs=None,
+                             ensemble_models_save_pth=None):
     if bc_dataset is None:
         # load expert supervised dataset
         bc_dataset = utils.GT_dataset(demonstrations, environment)
@@ -164,8 +156,17 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
     return bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset
 
 
-
 def main(_):
+
+    # the path of saved objects
+    pth_name = 'pkl/' + FLAGS.env_name + '_' + 'subsampling' + str(FLAGS.subsampling) + '_' + 'trajs' + str(FLAGS.num_demonstrations)
+    bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
+    sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
+    bc_model_pkl_pth = pth_name + '_bc_model.pkl'
+    suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
+    value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
+    ensemble_models_save_pth = 'pkl/ensemble_' + FLAGS.env_name + '_' + 'subsampling' + \
+        str(FLAGS.subsampling) + '_' + 'trajs' + str(FLAGS.num_demonstrations) + '/'
 
     from stable_baselines3.common.env_checker import check_env
     # It will check your custom environment and output additional warnings if needed
@@ -193,14 +194,12 @@ def main(_):
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
 
-
     imitation_rewarder = rewarder.PWILRewarder(
         demonstrations,
         subsampling=FLAGS.subsampling,
         env_specs=environment_spec,
         num_demonstrations=FLAGS.num_demonstrations,
         observation_only=FLAGS.state_only)
-
 
     try:
         with open(bc_dataset_pkl_pth, 'rb') as inputs:
@@ -217,12 +216,13 @@ def main(_):
 
         with open(value_dataset_pkl_pth, 'rb') as inputs:
             value_dataset = pickle.load(inputs)
-        
+
     except:
-        bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations, 
-                                                                                                        environment, 
-                                                                                                        imitation_rewarder)
-        
+        bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations,
+                                                                                                        environment,
+                                                                                                        imitation_rewarder,
+                                                                                                        ensemble_models_save_pth=ensemble_models_save_pth)
+
         with open(bc_dataset_pkl_pth, 'wb') as output:
             pickle.dump(bc_dataset, output, pickle.HIGHEST_PROTOCOL)
 
@@ -260,7 +260,7 @@ def main(_):
             r = traj[i][3]
 
             discounted_sub_R = 0
-            for idx, sub_trans in enumerate(traj[i:i+10]):
+            for idx, sub_trans in enumerate(traj[i:i + 10]):
                 discounted_sub_R += value_dataset.reward_gamma**(idx) * sub_trans[3]
 
             if value_dataset.value_type == 'v':
@@ -271,18 +271,18 @@ def main(_):
                 sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
 
             model.expert_replay_buffer.add(prev_obs,
-                                               obs,
-                                               act,
-                                               r,
-                                               False,
-                                               sub_Q,
-                                               discounted_sub_R,
-                                               sub_Q,
-                                               discounted_sub_R,
-                                               traj[i+10][0],
-                                               traj[i+10][1],
-                                               10)
-         
+                                           obs,
+                                           act,
+                                           r,
+                                           False,
+                                           sub_Q,
+                                           discounted_sub_R,
+                                           sub_Q,
+                                           discounted_sub_R,
+                                           traj[i + 10][0],
+                                           traj[i + 10][1],
+                                           10)
+
             print(discounted_sub_R, r, i)
     """
     for expert_tuple in value_dataset.tuple_enums:
