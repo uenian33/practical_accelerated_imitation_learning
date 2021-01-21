@@ -64,6 +64,14 @@ from torchensemble import BaggingRegressor           # import ensemble method (e
 import torch
 import time
 
+# the path of saved objects
+pth_name = 'pkl/'+FLAGS.env_name + '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)
+bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
+sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
+bc_model_pkl_pth = pth_name + '_bc_model.pkl'
+suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
+value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
+ensemble_models_save_pth = 'pkl/ensemble_'+FLAGS.env_name+ '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)+'/'
 
 
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
@@ -131,7 +139,8 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
                                                        epochs=220,
                                                        batch_size=512,
                                                        cuda=False,
-                                                       n_jobs=1)
+                                                       n_jobs=1,
+                                                       save_dir=ensemble_models_save_pth)
 
     if bc_model is None:
         bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
@@ -192,13 +201,7 @@ def main(_):
         num_demonstrations=FLAGS.num_demonstrations,
         observation_only=FLAGS.state_only)
 
-    # the path of saved objects
-    pth_name = 'pkl/'+FLAGS.env_name + '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)
-    bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
-    sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
-    bc_model_pkl_pth = pth_name + '_bc_model.pkl'
-    suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
-    value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
+
     try:
         with open(bc_dataset_pkl_pth, 'rb') as inputs:
             bc_dataset = pickle.load(inputs)
@@ -267,7 +270,7 @@ def main(_):
                 inputs = torch.FloatTensor(np.array([np.hstack(prev_obs, act)]))
                 sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
 
-            model.constrained_replay_buffer.add(prev_obs,
+            model.expert_replay_buffer.add(prev_obs,
                                                obs,
                                                act,
                                                r,

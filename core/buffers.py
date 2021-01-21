@@ -697,8 +697,8 @@ class ValueReplayBufferSamples(NamedTuple):
     next_observations:th.Tensor
     dones:th.Tensor
     rewards:th.Tensor
-    optimal_values:th.Tensor
     subopt_values:th.Tensor
+    optimal_values:th.Tensor
     subopt_nstep_R:th.Tensor
     optimal_nstep_R:th.Tensor
     nth_observations:th.Tensor

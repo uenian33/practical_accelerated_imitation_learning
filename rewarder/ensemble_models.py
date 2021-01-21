@@ -57,7 +57,9 @@ class EnsembleModels(object):
                  epochs=50,
                  batch_size=512,
                  cuda=False,
-                 n_jobs=1):
+                 n_jobs=1,
+                 save_model=True, 
+                 save_dir=None):
         super(EnsembleModels, self).__init__()
         # Define the ensemble
         self.model = BaggingRegressor(estimator=MLP,   # class of your base estimator
@@ -80,7 +82,7 @@ class EnsembleModels(object):
     def train_models(self):
         torch.manual_seed(0)
         tic = time.time()
-        self.model.fit(self.train_loader, self.lr, self.weight_decay, self.epochs, "Adam")
+        self.model.fit(self.train_loader, self.lr, self.weight_decay, self.epochs, "Adam", save_model=self.save_model, save_dir=self.save_dir)
         toc = time.time()
         training_time = toc - tic
 
