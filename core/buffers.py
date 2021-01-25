@@ -703,6 +703,6 @@ class ValueReplayBufferSamples(NamedTuple):
     optimal_nstep_R:th.Tensor
     nth_observations:th.Tensor
     nth_actions:th.Tensor
-    nstep:th.Tensor
+    nstep_gamma:th.Tensor
 
 

@@ -9,10 +9,17 @@
 env='BipedalWalker-v3'
 #env='MountainCarContinuous-v0'
 #env='LunarLanderContinuous-v2'
+#env='HalfCheetahBulletEnv-v0'
+#env='HumanoidBulletEnv-v0'
+#env='HopperBulletEnv-v0'
+#env='AntBulletEnv-v0'
+#env='Walker2dBulletEnv-v0'
+#env='BipedalWalker-v3'
 DEMO_DIR='demo/'
 
 original_trainer='True'
-store_path="tmp/pwil/${env}${path_spec}${original_trainer}"
+current_date_time="`date +%Y%m%d%H%M%S`"
+store_path="tmp/pwil/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_${current_date_time}"
 ep_steps=1000
 echo ${store_path}
 

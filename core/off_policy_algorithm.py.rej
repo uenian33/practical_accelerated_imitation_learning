@@ -1,0 +1,229 @@
+diff a/core/off_policy_algorithm.py b/core/off_policy_algorithm.py	(rejected hunks)
+@@ -1178,9 +1178,15 @@ class OffPolicyAlgorithm(BaseAlgorithm):
+ 
+                 # checking if current <s,a> or <s> belongs to expert trajs
+                 in_expert = self.expert_classifier.predict_class(self._last_original_obs[0], buffer_action[0], new_obs_[0])
+-                obs_input = th.FloatTensor(self._last_original_obs[0])
+-                tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+-                tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
++                try:
++                    obs_input = th.FloatTensor(self._last_original_obs[0])
++                    tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
++                    tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
++                except:
++                    obs_input = th.FloatTensor(np.hstack([self._last_original_obs[0], buffer_action[0]]))
++                    tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
++                    tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
++
+                 """
+                 self.constrained_replay_buffer.add(self._last_original_obs,
+                                                    new_obs_,
+@@ -1194,10 +1200,10 @@ class OffPolicyAlgorithm(BaseAlgorithm):
+                                                    1e3)
+                 """
+                 if in_expert:
+-                    traj.append([self._last_original_obs, buffer_action, new_obs_,
++                    traj.append([self._last_original_obs, new_obs_, buffer_action,
+                                  reward_, done, in_expert, tmp_sub_value, tmp_opt_value])
+                 else:
+-                    traj.append([self._last_original_obs, buffer_action, new_obs_,
++                    traj.append([self._last_original_obs, new_obs_, buffer_action,
+                                  reward_, done, in_expert, None, None])
+ 
+                 self._last_obs = new_obs
+@@ -1222,7 +1228,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
+                     self.train(batch_size=self.batch_size, gradient_steps=1,
+                                update_actor=True, weight_factor=self.num_timesteps % 1000)
+ 
+-            #self.add_non_expert_tuple_to_buffer(traj)
++            self.add_tuple_with_nsteps_to_buffer(traj)
+             # trajectories.append(traj)
+             if done:
+                 total_episodes += 1
+@@ -1244,116 +1250,87 @@ class OffPolicyAlgorithm(BaseAlgorithm):
+ 
+         return RolloutReturn(mean_reward, total_steps, total_episodes, continue_training), trajectories
+ 
+-    def add_tuple_with_TD_to_buffer(
++    def add_tuple_with_nsteps_to_buffer(
+         self,
+         traj,
+-        window: int=15,
++        window: int=10,
+     ) -> None:
+         skip_ids = []
+-        for idx in range(window, len(traj)):
++        for idx in range(len(traj)-window):
+             trans = traj[idx]
+             in_expert = trans[5]
+             if in_expert:
+-                # first add this expert transition
+-                self.constrained_replay_buffer.add(trans[0],
+-                                                   trans[2],
+-                                                   trans[1],
+-                                                   trans[3],
+-                                                   trans[4],
+-                                                   trans[6],
+-                                                   trans[7],
+-                                                   trans[6],
+-                                                   trans[7],
+-                                                   1e3
+-                                                   )
++               
+                 sub_Q = trans[-2]
+                 opt_Q = trans[-1]
+-                sub_traj = traj[idx - window: idx]
+-                for jdx in range(window-5):
+-                    sub_trans = sub_traj[jdx]
+-                    if sub_trans[5] is False:
+-                        discount_sum_r = 0
+-                        for ndx, sub_tranj_trans in enumerate(sub_traj[jdx:]):
+-                            print(idx+jdx+ndx,sub_tranj_trans[3])
+-                            discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
+-                        tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
+-                        tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
+-                        print(discount_sum_r, opt_Q, sub_Q)
+-                        self.constrained_replay_buffer.add(sub_trans[0],
+-                                                           sub_trans[2],
+-                                                           sub_trans[1],
+-                                                           sub_trans[3],
+-                                                           sub_trans[4],
+-                                                           tmp_sub_Q,
+-                                                           tmp_opt_Q,
+-                                                           discount_sum_r,
+-                                                           discount_sum_r,
+-                                                           window-jdx
+-                                                           )
+-                        skip_ids.append(idx - window + jdx)
+-
+-        for s_id in range(len(traj)):#skip_ids:
+-            trans = traj[s_id]
+-            self.replay_buffer.add(trans[0],
+-                                   trans[2],
+-                                   trans[1],
+-                                   trans[3],
+-                                   trans[4],
+-                                   None, None, None, None, None, use_ideal=False)
+-
+-    def add_tuple_with_MC_to_buffer(
+-        self,
+-        traj,
+-        window: int=15,
+-    ) -> None:
+-        skip_ids = []
+-        for idx in range(window, len(traj)):
+-            trans = traj[idx]
+-            in_expert = trans[5]
+-            if in_expert:
+-                # first add this expert transition
++
++                # forward boostrapping
++                sub_traj = traj[idx: idx+window]
++                discount_sum_r = 0
++                for ndx, sub_tranj_trans in enumerate(sub_traj):
++                    discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
++                
+                 self.constrained_replay_buffer.add(trans[0],
+-                                                   trans[2],
+                                                    trans[1],
++                                                   trans[2],
+                                                    trans[3],
+                                                    trans[4],
+-                                                   trans[6],
+-                                                   trans[7],
+-                                                   trans[6],
+-                                                   trans[7],
+-                                                   1e3
++                                                   sub_Q,
++                                                   opt_Q,
++                                                   discount_sum_r,
++                                                   discount_sum_r,
++                                                   traj[idx+window][0],
++                                                   traj[idx+window][2],
++                                                   self.gamma**window
+                                                    )
+-                sub_Q = trans[-2]
+-                opt_Q = trans[-1]
+-                sub_traj = traj[idx - window: idx]
+-                for jdx in range(window-5):
+-                    sub_trans = sub_traj[jdx]
+-                    if sub_trans[5] is False:
+-                        discount_sum_r = 0
+-                        for ndx, sub_tranj_trans in enumerate(sub_traj[jdx:]):
+-                            print(idx+jdx+ndx,sub_tranj_trans[3])
+-                            discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
+-                        tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
+-                        tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
+-                        print(discount_sum_r, opt_Q, sub_Q)
+-                        self.constrained_replay_buffer.add(sub_trans[0],
+-                                                           sub_trans[2],
+-                                                           sub_trans[1],
+-                                                           sub_trans[3],
+-                                                           sub_trans[4],
+-                                                           tmp_sub_Q,
+-                                                           tmp_opt_Q,
+-                                                           discount_sum_r,
+-                                                           discount_sum_r,
+-                                                           window-jdx
+-                                                           )
+-                        skip_ids.append(idx - window + jdx)
+-
+-        for s_id in range(len(traj)):#skip_ids:
+-            trans = traj[s_id]
+-            self.replay_buffer.add(trans[0],
+-                                   trans[2],
+-                                   trans[1],
+-                                   trans[3],
+-                                   trans[4],
+-                                   None, None, None, None, None, use_ideal=False)
++
++                # backward boostrapping
++                prev_id = idx-window
++                prev_sub_traj = traj[ prev_id: idx]
++                prev_trans = traj[prev_id]
++                prev_discount_sum_r = 0
++
++                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
++                    prev_discount_sum_r += self.gamma**ndx*prev_sub_tranj_trans[3]
++
++                self.constrained_replay_buffer.add(prev_trans[0],
++                                                   prev_trans[1],
++                                                   prev_trans[2],
++                                                   prev_trans[3],
++                                                   prev_trans[4],
++                                                   prev_discount_sum_r + self.gamma**window * sub_Q,
++                                                   prev_discount_sum_r + self.gamma**window * opt_Q,
++                                                   prev_discount_sum_r + discount_sum_r,
++                                                   prev_discount_sum_r + discount_sum_r,
++                                                   traj[idx+window][0],
++                                                   traj[idx+window][2],
++                                                   self.gamma**(2*window)
++                                                   )
++
++                for ndx, _ in enumerate(sub_traj):
++                    sub_sub_traj = sub_traj[ndx:]
++                    discount_sum_r = 0
++                    for sub_sub_id, sub_sub_trans in enumerate(sub_sub_traj):
++                        discount_sum_r += self.gamma**ndx*sub_sub_trans[3]
++                    #print(sub_sub_id)
++                    extra_sub_Q = discount_sum_r + self.gamma**(sub_sub_id+1)*sub_Q
++                    extra_opt_Q = discount_sum_r + self.gamma**(sub_sub_id+1)*opt_Q
++                    self.constrained_replay_buffer.add(trans[0],
++                                                       trans[1],
++                                                       trans[2],
++                                                       trans[3],
++                                                       trans[4],
++                                                       extra_sub_Q,
++                                                       extra_opt_Q,
++                                                       discount_sum_r,
++                                                       discount_sum_r,
++                                                       traj[idx+window][0],
++                                                       traj[idx+window][2],
++                                                       self.gamma**(window+sub_sub_id+1)
++                                                       )
++                
++
++
++
++
++    
