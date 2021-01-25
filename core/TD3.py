@@ -14,6 +14,7 @@ from core.off_policy_algorithm import OffPolicyAlgorithm
 
 import random
 
+th.manual_seed(0)
 
 class TD3(OffPolicyAlgorithm):
     """
@@ -206,7 +207,7 @@ class TD3(OffPolicyAlgorithm):
                 targets_q_constrained = constrained_replay_data.rewards + (1 - constrained_replay_data.dones) * self.gamma * targets_q_constrained
                 
                 target_q_lower_bound, _ = th.max(th.cat((target_q_real_nstep, targets_q_constrained), dim=1),dim=1, keepdim=True)
-                target_q_lower_bound, _ = th.max(th.cat((target_q_lower_bound, targets_q_constrained), dim=1),dim=1, keepdim=True)
+                target_q_lower_bound, _ = th.max(th.cat((target_q_real_nstep, targets_q_constrained), dim=1),dim=1, keepdim=True)
 
             # Get current Q estimates for each critic network
             current_q_estimates = self.critic(replay_data.observations.float(), replay_data.actions.float())
@@ -229,7 +230,7 @@ class TD3(OffPolicyAlgorithm):
             #if critic_loss_expert > 0:
             #    print(critic_loss_expert)
            
-            critic_loss = critic_loss_origin + 0.*critic_loss_expert + 0.3*critic_loss_constrained
+            critic_loss = critic_loss_origin + 0.*critic_loss_expert + 0.2*critic_loss_constrained
             critic_losses.append(critic_loss.item())
 
             # Optimize the critics
@@ -408,7 +409,7 @@ class TD3(OffPolicyAlgorithm):
                                                traj[i + 10][0],
                                                traj[i + 10][1],
                                                value_dataset.reward_gamma**10)
-                print(discounted_sub_R, r, i)
+                #print(discounted_sub_R, r, i)
 
     def _excluded_save_params(self) -> List[str]:
         return super(TD3, self)._excluded_save_params() + ["actor", "critic", "actor_target", "critic_target"]

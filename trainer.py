@@ -65,6 +65,7 @@ from torchensemble import BaggingRegressor           # import ensemble method (e
 import torch
 import time
 
+torch.manual_seed(0)
 
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
     obs = environment.reset()

@@ -19,6 +19,7 @@ from torchensemble.utils import set_logger
 from sklearn.metrics.pairwise import euclidean_distances
 import numpy as np
 
+torch.manual_seed(0)
 
 def display_records(records, logger):
     msg = (

@@ -34,6 +34,7 @@ from core.customized_env import CustomizedEnv
 from stable_baselines3.common.vec_env import DummyVecEnv
 from sklearn import svm, preprocessing
 
+torch.manual_seed(0)
 
 def load_demonstrations(demo_dir, env_name, state_demo=False, traj_number=50):
     """Load expert demonstrations.

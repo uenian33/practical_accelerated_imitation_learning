@@ -21,6 +21,7 @@ from stable_baselines3.common.vec_env import VecEnv
 
 from core.buffers import IdealReplayBuffer, ValueReplayBuffer
 
+th.manual_seed(0)
 
 class OffPolicyAlgorithm(BaseAlgorithm):
     """
@@ -1272,7 +1273,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
                     tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
                     tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
-                    print(discount_sum_r, opt_Q, sub_Q)
+                    print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
                     self.constrained_replay_buffer.add(trans[0],
                                                trans[1],
                                                trans[2],
