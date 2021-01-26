@@ -116,7 +116,11 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
                              ensemble_models_save_pth=None):
     if bc_dataset is None:
         # load expert supervised dataset
-        bc_dataset = utils.GT_dataset(demonstrations, environment, imitation_rewarder=imitation_rewarder)
+        bc_dataset = utils.GT_dataset(demonstrations, environment, 
+                                    imitation_rewarder=imitation_rewarder,
+                                    bc=True, 
+                                    nsteps=10, 
+                                    reward_gamma=0.99)
 
     if bc_model is None:
         bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
@@ -261,7 +265,7 @@ def main(_):
 
     parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
    
-
+    model.pretrain_actor_using_demo()
     model.add_expert_trajs_to_buffer(parsed_trajs, value_dataset)
     model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6)

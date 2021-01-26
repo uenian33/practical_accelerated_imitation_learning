@@ -179,6 +179,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             self.device,
             optimize_memory_usage=self.optimize_memory_usage,
         )
+       
         self.constrained_replay_buffer = ValueReplayBuffer(
             self.buffer_size,
             self.observation_space,
@@ -469,7 +470,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         n_steps: int = -1,
         action_noise: Optional[ActionNoise] = None,
         learning_starts: int = 0,
-        replay_buffer: Optional[IdealReplayBuffer] = None,
+        replay_buffer: Optional[ValueReplayBuffer] = None,
         log_interval: Optional[int] = None,
         #
     ) -> RolloutReturn:
@@ -1257,57 +1258,88 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         self,
         traj,
         window: int=10,
+        optimal_window: int=2,
+        optimal_r: int=5
     ) -> None:
         skip_ids = []
         for idx in range(window, len(traj)-window):
             trans = traj[idx]
             in_expert = trans[5]
-            if in_expert:
+            if in_expert and (idx > (window-1)) and (idx < len(traj)-window):
                 # first add this expert transition
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
                 sub_traj = traj[idx : window+idx]
                 discount_sum_r = 0
+
                 for ndx, sub_tranj_trans in enumerate(sub_traj):
                     discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
+                tmp_sub_Q = discount_sum_r 
 
-                    tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
-                    tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
-                    print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
-                    self.constrained_replay_buffer.add(trans[0],
-                                               trans[1],
-                                               trans[2],
-                                               trans[3],
-                                               trans[4],
-                                               tmp_sub_Q,
-                                               tmp_opt_Q,
-                                               discount_sum_r,
-                                               discount_sum_r,
-                                               traj[idx+window][0],
-                                               traj[idx+window][2],
-                                               self.gamma**window
-                                               )
+                #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
+                self.constrained_replay_buffer.add(trans[0],
+                                           trans[1],
+                                           trans[2],
+                                           trans[3],
+                                           trans[4],
+                                           opt_Q, # nstep suboptimal Q is the accumulative R
+                                           discount_sum_r, # nstep accumulative R
+                                           opt_Q, # nstep MC-optimal Q
+                                           traj[idx+window][0], # state-action after window_step_th (lower-bound) 
+                                           traj[idx+window][2], # state-action after window_step_th (lower-bound) 
+                                           self.gamma**window, # discounted gamma after window_step_th
+                                           )
                         
 
                 # backward boostrapping
-                prev_id = idx-window
+                prev_id = idx - optimal_window
                 prev_sub_traj = traj[ prev_id: idx]
                 prev_trans = traj[prev_id]
                 prev_discount_sum_r = 0
+                prev_optimal_sum_r = 0
 
                 for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
                     prev_discount_sum_r += self.gamma**ndx*prev_sub_tranj_trans[3]
+
+                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
+                    prev_optimal_sum_r += self.gamma**ndx*prev_optimal_sum_r
 
                 self.constrained_replay_buffer.add(prev_trans[0],
                                                    prev_trans[1],
                                                    prev_trans[2],
                                                    prev_trans[3],
                                                    prev_trans[4],
-                                                   prev_discount_sum_r + self.gamma**window * sub_Q,
-                                                   prev_discount_sum_r + self.gamma**window * opt_Q,
-                                                   prev_discount_sum_r + discount_sum_r,
-                                                   prev_discount_sum_r + discount_sum_r,
-                                                   trans[0],
-                                                   trans[2],
-                                                   self.gamma**(2*window)
+                                                   prev_discount_sum_r + self.gamma**optimal_window * opt_Q, #  nstep sum R + discounted nstep MC-optimal Q
+                                                   prev_discount_sum_r + self.gamma**optimal_window * discount_sum_r, # optimal_window+n step discounted accumulative R
+                                                   prev_optimal_sum_r + self.gamma**optimal_window * opt_Q, # greedy optimal nstep sum R + discounted nstep MC-optimal Q
+                                                   traj[idx+window][0], # state-action after pred_id -> window_step_th (lower-bound) 
+                                                   traj[idx+window][2], # state-action after pred_id -> window_step_th (lower-bound) 
+                                                   self.gamma**(window+optimal_window), # discounted gamma after window_step_th
                                                    )
+        else:
+             # first add this expert transition
+            sub_Q = trans[-2]
+            opt_Q = trans[-1]
+            sub_traj = traj[idx : window+idx]
+            discount_sum_r = 0
+            greedy_sum_r = 0
+            for ndx, sub_tranj_trans in enumerate(sub_traj):
+                discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
+
+            for ndx, sub_tranj_trans in enumerate(sub_traj):
+                greedy_sum_r += self.gamma**ndx*optimal_r
+
+            #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
+            self.constrained_replay_buffer.add(trans[0],
+                                               trans[1],
+                                               trans[2],
+                                               trans[3],
+                                               trans[4],
+                                               discount_sum_r, # nstep suboptimal Q is the accumulative R
+                                               discount_sum_r, # nstep accumulative R
+                                               greedy_sum_r, # # nstep greedy accumulative R_optimal set as the upper bound
+                                               traj[idx+window][0],
+                                               traj[idx+window][2],
+                                               self.gamma**window
+                                               )
+

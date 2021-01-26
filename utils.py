@@ -240,7 +240,13 @@ class DATASET(Dataset):
 
 class GT_dataset():
 
-    def __init__(self, demonstrations, env, customize_env=False, batch_size=512, bc=True, nsteps=10, imitation_rewarder=None, reward_gamma=0.99):
+    def __init__(self, demonstrations, env, 
+                    customize_env=False, 
+                    batch_size=512,
+                    bc=True, 
+                    nsteps=10, 
+                    imitation_rewarder=None, 
+                    reward_gamma=0.99):
         self.xs = []
         self.ys = []
         self.SAs = []
