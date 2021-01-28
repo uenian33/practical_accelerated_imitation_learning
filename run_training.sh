@@ -15,16 +15,23 @@ env='BipedalWalker-v3'
 #env='AntBulletEnv-v0'
 #env='Walker2dBulletEnv-v0'
 #env='BipedalWalker-v3'
+<<<<<<< HEAD
 
 # The q constrain type specification
 #['None', ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
 
 q_bound_type='DDPGfD'
+=======
+>>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
 DEMO_DIR='demo/'
 
 original_trainer='True'
 current_date_time="`date +%Y%m%d%H%M%S`"
+<<<<<<< HEAD
 store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_${current_date_time}"
+=======
+store_path="tmp/pwil/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_${current_date_time}"
+>>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
 ep_steps=1000
 echo ${store_path}
 

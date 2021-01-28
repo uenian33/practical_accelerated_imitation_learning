@@ -66,9 +66,13 @@ from torchensemble import BaggingRegressor           # import ensemble method (e
 import torch
 import time
 
+<<<<<<< HEAD
 RANDOM_SEED = 0
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
+=======
+torch.manual_seed(0)
+>>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
 
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
     obs = environment.reset()
@@ -220,7 +224,16 @@ def main(_):
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
 
+<<<<<<< HEAD
    
+=======
+    imitation_rewarder = rewarder.PWILRewarder(
+        demonstrations,
+        subsampling=FLAGS.subsampling,
+        env_specs=environment_spec,
+        num_demonstrations=FLAGS.num_demonstrations,
+        observation_only=FLAGS.state_only)
+>>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
 
     try:
         with open(bc_dataset_pkl_pth, 'rb') as inputs:
@@ -270,12 +283,20 @@ def main(_):
                 use_acceleration=use_acceleration,
                 expert_classifier=sa_classifier,
                 sub_Q_estimator=sa_classifier, # value_dataset.sub_q_model,
+<<<<<<< HEAD
                 opt_Q_estimator=sa_classifier, # value_dataset.opt_q_model)
                 bound_type=FLAGS.q_bound_type)
 
     parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
    
     #model.pretrain_actor_using_demo()
+=======
+                opt_Q_estimator=sa_classifier) # value_dataset.opt_q_model)
+
+    parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
+   
+    model.pretrain_actor_using_demo()
+>>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
     model.add_expert_trajs_to_buffer(parsed_trajs, value_dataset)
     model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6)
