@@ -1245,11 +1245,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     self.train(batch_size=self.batch_size, gradient_steps=1,
                                update_actor=True, weight_factor=self.num_timesteps % 1000)
 
-<<<<<<< HEAD
             self.add_tuple_with_nsteps_to_buffer(traj, episode_reward=episode_reward)
-=======
-            self.add_tuple_with_nsteps_to_buffer(traj)
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
             # trajectories.append(traj)
             if done:
                 total_episodes += 1
@@ -1276,12 +1272,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
     def add_tuple_with_nsteps_to_buffer(
         self,
         traj,
-<<<<<<< HEAD
         episode_reward,
-=======
-        window: int=10,
-        optimal_window: int=2,
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
         optimal_r: int=5
     ) -> None:
         self.expert_mean_reward = 300
@@ -1291,17 +1282,12 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         normal_window = self.normal_window#: int=3
 
         skip_ids = []
-<<<<<<< HEAD
         traj_len = len(traj)
         for idx in range(traj_len):
-=======
-        for idx in range(window, len(traj)-window):
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
             trans = traj[idx]
             in_expert = trans[5]
             if in_expert and (idx > (window-1)) and (idx < len(traj)-window):
                 # first add this expert transition
-<<<<<<< HEAD
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
                 sub_traj = traj[idx : window+idx]
@@ -1453,81 +1439,4 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                False,
                                                self.gamma**window)
                 #print(discounted_R, r, i)
-=======
-                sub_Q = trans[-2]
-                opt_Q = trans[-1]
-                sub_traj = traj[idx : window+idx]
-                discount_sum_r = 0
-
-                for ndx, sub_tranj_trans in enumerate(sub_traj):
-                    discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
-                tmp_sub_Q = discount_sum_r 
-
-                #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
-                self.constrained_replay_buffer.add(trans[0],
-                                           trans[1],
-                                           trans[2],
-                                           trans[3],
-                                           trans[4],
-                                           opt_Q, # nstep suboptimal Q is the accumulative R
-                                           discount_sum_r, # nstep accumulative R
-                                           opt_Q, # nstep MC-optimal Q
-                                           traj[idx+window][0], # state-action after window_step_th (lower-bound) 
-                                           traj[idx+window][2], # state-action after window_step_th (lower-bound) 
-                                           self.gamma**window, # discounted gamma after window_step_th
-                                           )
-                        
-
-                # backward boostrapping
-                prev_id = idx - optimal_window
-                prev_sub_traj = traj[ prev_id: idx]
-                prev_trans = traj[prev_id]
-                prev_discount_sum_r = 0
-                prev_optimal_sum_r = 0
-
-                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
-                    prev_discount_sum_r += self.gamma**ndx*prev_sub_tranj_trans[3]
-
-                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
-                    prev_optimal_sum_r += self.gamma**ndx*prev_optimal_sum_r
-
-                self.constrained_replay_buffer.add(prev_trans[0],
-                                                   prev_trans[1],
-                                                   prev_trans[2],
-                                                   prev_trans[3],
-                                                   prev_trans[4],
-                                                   prev_discount_sum_r + self.gamma**optimal_window * opt_Q, #  nstep sum R + discounted nstep MC-optimal Q
-                                                   prev_discount_sum_r + self.gamma**optimal_window * discount_sum_r, # optimal_window+n step discounted accumulative R
-                                                   prev_optimal_sum_r + self.gamma**optimal_window * opt_Q, # greedy optimal nstep sum R + discounted nstep MC-optimal Q
-                                                   traj[idx+window][0], # state-action after pred_id -> window_step_th (lower-bound) 
-                                                   traj[idx+window][2], # state-action after pred_id -> window_step_th (lower-bound) 
-                                                   self.gamma**(window+optimal_window), # discounted gamma after window_step_th
-                                                   )
-        else:
-             # first add this expert transition
-            sub_Q = trans[-2]
-            opt_Q = trans[-1]
-            sub_traj = traj[idx : window+idx]
-            discount_sum_r = 0
-            greedy_sum_r = 0
-            for ndx, sub_tranj_trans in enumerate(sub_traj):
-                discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
-
-            for ndx, sub_tranj_trans in enumerate(sub_traj):
-                greedy_sum_r += self.gamma**ndx*optimal_r
-
-            #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
-            self.constrained_replay_buffer.add(trans[0],
-                                               trans[1],
-                                               trans[2],
-                                               trans[3],
-                                               trans[4],
-                                               discount_sum_r, # nstep suboptimal Q is the accumulative R
-                                               discount_sum_r, # nstep accumulative R
-                                               greedy_sum_r, # # nstep greedy accumulative R_optimal set as the upper bound
-                                               traj[idx+window][0],
-                                               traj[idx+window][2],
-                                               self.gamma**window
-                                               )
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
 
