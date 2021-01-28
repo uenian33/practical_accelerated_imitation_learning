@@ -300,11 +300,7 @@ class GT_dataset():
         for tdx, traj in enumerate(demonstrations):
             imitation_rewarder.reset()
             new_traj = []
-<<<<<<< HEAD
             for idx in range(len(traj) - 5):
-=======
-            for idx in range(len(traj) - 1):
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
                 act = traj[idx]['action']
                 obs = traj[idx]['observation']
                 next_obs = traj[idx + 1]['observation']
