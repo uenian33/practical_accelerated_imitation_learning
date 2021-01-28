@@ -702,10 +702,7 @@ class ValueReplayBufferSamples(NamedTuple):
     optimal_values:th.Tensor
     nth_observations:th.Tensor
     nth_actions:th.Tensor
-<<<<<<< HEAD
     nth_dones:th.tensor
-=======
->>>>>>> cb2d5068e5a5fd0ef9afa98a7bb2cf6c33628d77
     nstep_gamma:th.Tensor
 
 
