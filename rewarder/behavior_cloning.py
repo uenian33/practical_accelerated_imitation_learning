@@ -12,6 +12,7 @@ import torchvision.transforms as transforms
 from torchvision.utils import make_grid
 import rewarder.ensemble_models as ensemble_models
 
+torch.manual_seed(0)
 
 def weights_init_kaimingUniform(module):
     for m in module.modules():

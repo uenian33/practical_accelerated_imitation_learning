@@ -593,11 +593,11 @@ class ValueReplayBuffer(BaseBuffer):
         self.dones = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.optimal_values = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.subopt_values = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
-        self.subopt_nstep_R = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
-        self.optimal_nstep_R = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
+        self.nstep_reward = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.nth_observations = np.zeros((self.buffer_size, self.n_envs) + self.obs_shape, dtype=observation_space.dtype)
         self.nth_actions = np.zeros((self.buffer_size, self.n_envs, self.action_dim), dtype=action_space.dtype)
-        self.nstep = np.zeros((self.buffer_size, self.n_envs), dtype=np.int)
+        self.nth_dones = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
+        self.nstep = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
 
         if psutil is not None:
             total_memory_usage = self.observations.nbytes + self.actions.nbytes + self.rewards.nbytes + self.dones.nbytes
@@ -615,11 +615,11 @@ class ValueReplayBuffer(BaseBuffer):
 
     def add(self, obs: np.ndarray, next_obs: np.ndarray, action: np.ndarray, reward: np.ndarray, done: np.ndarray,
             subopt_value: np.array,
+            nstep_reward: np.array,
             optimal_value: np.array,
-            subopt_nstep_R: np.array,
-            optimal_nstep_R: np.array,
             nth_observations: np.array,
             nth_actions: np.array,
+            nth_done: np.ndarray,
             nstep:np.array) -> None:
         # Copy to avoid modification by reference
         self.observations[self.pos] = np.array(obs).copy()
@@ -631,12 +631,12 @@ class ValueReplayBuffer(BaseBuffer):
         self.actions[self.pos] = np.array(action).copy()
         self.rewards[self.pos] = np.array(reward).copy()
         self.dones[self.pos] = np.array(done).copy()
-        self.optimal_values[self.pos] = np.array(optimal_value).copy()
         self.subopt_values[self.pos] = np.array(subopt_value).copy()
-        self.subopt_nstep_R[self.pos] = np.array(subopt_nstep_R).copy()
-        self.optimal_nstep_R[self.pos] = np.array(optimal_nstep_R).copy()
+        self.nstep_reward[self.pos] = np.array(nstep_reward).copy()
+        self.optimal_values[self.pos] = np.array(optimal_value).copy()
         self.nth_observations[self.pos] = np.array(nth_observations).copy()
         self.nth_actions[self.pos] = np.array(nth_actions).copy()
+        self.nth_dones[self.pos] = np.array(nth_done).copy()
         self.nstep[self.pos] = np.array(nstep).copy()
 
 
@@ -681,10 +681,10 @@ class ValueReplayBuffer(BaseBuffer):
             self._normalize_reward(self.rewards[batch_inds], env),
             self.optimal_values[batch_inds],
             self.subopt_values[batch_inds],
-            self.subopt_nstep_R[batch_inds],
-            self.optimal_nstep_R[batch_inds],
+            self.nstep_reward[batch_inds],
             self._normalize_obs(self.nth_observations[batch_inds, 0, :], env),
             self.nth_actions[batch_inds, 0, :],
+            self.nth_dones[batch_inds],
             self.nstep[batch_inds]
         )
         return ValueReplayBufferSamples(*tuple(map(self.to_torch, data)))
@@ -697,12 +697,12 @@ class ValueReplayBufferSamples(NamedTuple):
     next_observations:th.Tensor
     dones:th.Tensor
     rewards:th.Tensor
-    optimal_values:th.Tensor
     subopt_values:th.Tensor
-    subopt_nstep_R:th.Tensor
-    optimal_nstep_R:th.Tensor
+    nstep_reward:th.Tensor
+    optimal_values:th.Tensor
     nth_observations:th.Tensor
     nth_actions:th.Tensor
-    nstep:th.Tensor
+    nth_dones:th.tensor
+    nstep_gamma:th.Tensor
 
 

@@ -1,6 +1,0 @@
-
-tensorboard --logdir=/media/wenyan/data_nataliya/imitation_learning/dac/tmp/interaction/lfd_state_action_traj_25_Hopper-v2_20/train
-tensorboard --logdir=/media/wenyan/data_nataliya/imitation_learning/dac/tmp/interaction/lfd_state_action_traj_5_HalfCheetah-v2_20/train/
-
-tensorboard --logdir=/media/wenyan/data_nataliya/imitation_learning/state_alignment_imitation_learning/runs/2020-11-26_17-35-38_softbc_Hopper-v2_0.005
-tensorboard --logdir=/media/wenyan/data_nataliya/imitation_learning/state_alignment_imitation_learning/runs/2020-11-26_17-36-06_softbc_Walker2d-v2_0.005

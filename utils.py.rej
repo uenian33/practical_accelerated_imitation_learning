@@ -1,0 +1,95 @@
+diff a/utils.py b/utils.py	(rejected hunks)
+@@ -70,6 +70,7 @@ def load_demonstrations(demo_dir, env_name, state_demo=False, traj_number=50):
+         for t in demonstrations:
+             new_t = []
+             for pair in t:
++                #print(pair)
+                 s = pair['observation'][0]
+                 a = pair['action'][0]
+                 new_pair = {'observation': s, 'action': a}
+@@ -244,32 +245,34 @@ class GT_dataset():
+         self.ys = []
+         self.SAs = []
+         self.nextSs = []
+-        self.enums = None
++        self.enums = []
+         self.env = env
+         self.batch_size = batch_size
+         for traj in demonstrations:
+             for idx, pair in enumerate(traj):
+-                if customize_env:
+-                    if env.use_scaler:
+-                        y = env.a_scaler.transform([pair['action']])[0]
+-                else:
+-                    y = pair['action'] 
+                 x = pair['observation']
++                y = pair['action'] 
++
+                 self.xs.append(x)
+                 self.ys.append(y)
+-                try:
+-                    self.nextSs.append(traj[idx+1]['action'])
+-                    self.SAs.append(np.hstack(x, y).flatten())
+-                except:
+-                    True
++                #self.enums.append((x, y))
+ 
++                if idx < (len(traj)-2):
++                    self.nextSs.append(traj[idx+1]['observation'])
++                    self.SAs.append(np.hstack([x, y]).flatten())
++        
++        print(self.SAs[0].shape, self.nextSs[0].shape, self.xs[0].shape, self.ys[0].shape)
+         self.update_dataloader()
+ 
+     def update_dataloader(self, shuffle=True):
+         batch_size = self.batch_size
+         self.train_dataset = DATASET(X=self.xs, y=self.ys)
+         self.train_loader = DataLoader(dataset=self.train_dataset, batch_size=batch_size, shuffle=shuffle)
++        #print(self.SAs)
++        self.sa_train_dataset = DATASET(X=self.SAs, y=self.nextSs)
++        self.sa_train_loader = DataLoader(dataset=self.sa_train_dataset, batch_size=batch_size, shuffle=shuffle)
+         self.enums = list(enumerate(self.train_loader))
++        
+ 
+     def append_dataset(self, x, y):
+         self.xs.append(x)
+@@ -287,7 +290,8 @@ class VALUE_dataset():
+                  env_max_steps=1000,
+                  batch_size=2048,
+                  max_store_length=10e7,
+-                 imitation_rewarder=None):
++                 imitation_rewarder=None,
++                 value_type='q'):
+         self.SAs = []
+         self.Ss = []
+         self.sub_ys = []
+@@ -306,7 +310,7 @@ class VALUE_dataset():
+         self.max_store_length = max_store_length
+ 
+         self.optimal_Q = self.reward_scale * self.reward_constant / (1 - self.reward_gamma)  # a/(1-q)
+-        self.value_type = 'v'  # 'q'
++        self.value_type = value_type  # 'q'
+         self.imitation_rewarder = imitation_rewarder
+ 
+     def reset_dataset(self):
+@@ -442,14 +446,18 @@ class VALUE_dataset():
+                         sub_Q = self.sub_q_model.model(inputs).detach().numpy().flatten()[0]
+                         opt_Q = self.opt_q_model.model(inputs).detach().numpy().flatten()[0]
+                     elif self.value_type == 'q':
+-                        inputs = torch.FloatTensor(np.array([np.hstack(prev_obs, act)]))
++                        inputs = torch.FloatTensor(np.array([np.hstack([prev_obs, act])]))
+                         sub_Q = self.sub_q_model.model(inputs).detach().numpy().flatten()[0]
+                         opt_Q = self.opt_q_model.model(inputs).detach().numpy().flatten()[0]
+                     print(sub_Q, opt_Q)
+                     # note here r is the suboptimal r from bc policy, 1 is the optimal ideal r
+                     #self.tuple_enums.append((np.array(prev_obs), np.array(act), np.array(obs), r, done, opt_Q, sub_Q))
+ 
+-    def init_q_models(self, q_model, x_dim,  suboptimal_trajs, demonstrations, window_size=None, rewarder=None, epochs=500):
++    def init_q_models(self, q_model,  suboptimal_trajs, demonstrations, window_size=None, rewarder=None, epochs=500):
++        if self.value_type == 'v':
++            x_dim = demonstrations[0][0]['action'].shape[0]
++        else:
++            x_dim = demonstrations[0][0]['action'].shape[0] + demonstrations[0][0]['observation'].shape[0]
+         y_dim = 1
+         self.imitation_rewarder = rewarder
+         self.create_MC_subvalue_datasets_from_bc_trajectories(suboptimal_trajs, nsteps=window_size)

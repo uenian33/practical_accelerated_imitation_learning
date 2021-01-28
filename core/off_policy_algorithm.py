@@ -21,6 +21,7 @@ from stable_baselines3.common.vec_env import VecEnv
 
 from core.buffers import IdealReplayBuffer, ValueReplayBuffer
 
+th.manual_seed(0)
 
 class OffPolicyAlgorithm(BaseAlgorithm):
     """
@@ -109,7 +110,8 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         use_acceleration=False,
         expert_classifier=None,
         sub_Q_estimator=None,
-        opt_Q_estimator=None
+        opt_Q_estimator=None,
+        bound_tyoe=None
     ):
 
         super(OffPolicyAlgorithm, self).__init__(
@@ -168,6 +170,20 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         # For gSDE only
         self.use_sde_at_warmup = use_sde_at_warmup
 
+        # set boostrapping window size
+        self.forward_window = 10
+        self.backward_window = 2
+        self.normal_window = 3
+
+    def _set_nstep_size(self,
+                        forward_window=10,
+                        backward_window=2,
+                        normal_window=3) -> None:
+
+        self.forward_window = forward_window#10
+        self.backward_window = backward_window #2
+        self.normal_window = normal_window #3
+
     def _setup_model(self) -> None:
         self._setup_lr_schedule()
         self.set_random_seed(self.seed)
@@ -178,6 +194,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             self.device,
             optimize_memory_usage=self.optimize_memory_usage,
         )
+       
         self.constrained_replay_buffer = ValueReplayBuffer(
             self.buffer_size,
             self.observation_space,
@@ -468,7 +485,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         n_steps: int = -1,
         action_noise: Optional[ActionNoise] = None,
         learning_starts: int = 0,
-        replay_buffer: Optional[IdealReplayBuffer] = None,
+        replay_buffer: Optional[ValueReplayBuffer] = None,
         log_interval: Optional[int] = None,
         #
     ) -> RolloutReturn:
@@ -1178,9 +1195,15 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
                 # checking if current <s,a> or <s> belongs to expert trajs
                 in_expert = self.expert_classifier.predict_class(self._last_original_obs[0], buffer_action[0], new_obs_[0])
-                obs_input = th.FloatTensor(self._last_original_obs[0])
-                tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
-                tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+                try:
+                     obs_input = th.FloatTensor(self._last_original_obs[0])
+                     tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+                     tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+                except:
+                     obs_input = th.FloatTensor(np.hstack([self._last_original_obs[0], buffer_action[0]]))
+                     tmp_opt_value = self.sub_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+                     tmp_sub_value = self.opt_Q_estimator.model(obs_input).detach().numpy().flatten()[0]
+
                 """
                 self.constrained_replay_buffer.add(self._last_original_obs,
                                                    new_obs_,
@@ -1194,10 +1217,10 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                    1e3)
                 """
                 if in_expert:
-                    traj.append([self._last_original_obs, buffer_action, new_obs_,
+                    traj.append([self._last_original_obs,  new_obs_, buffer_action,
                                  reward_, done, in_expert, tmp_sub_value, tmp_opt_value])
                 else:
-                    traj.append([self._last_original_obs, buffer_action, new_obs_,
+                    traj.append([self._last_original_obs,  new_obs_, buffer_action,
                                  reward_, done, in_expert, None, None])
 
                 self._last_obs = new_obs
@@ -1222,7 +1245,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     self.train(batch_size=self.batch_size, gradient_steps=1,
                                update_actor=True, weight_factor=self.num_timesteps % 1000)
 
-            #self.add_non_expert_tuple_to_buffer(traj)
+            self.add_tuple_with_nsteps_to_buffer(traj, episode_reward=episode_reward)
             # trajectories.append(traj)
             if done:
                 total_episodes += 1
@@ -1244,116 +1267,176 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
         return RolloutReturn(mean_reward, total_steps, total_episodes, continue_training), trajectories
 
-    def add_tuple_with_TD_to_buffer(
+  
+
+    def add_tuple_with_nsteps_to_buffer(
         self,
         traj,
-        window: int=15,
+        episode_reward,
+        optimal_r: int=5
     ) -> None:
+        self.expert_mean_reward = 300
+
+        window = self.forward_window#: int=10
+        optimal_window = self.backward_window#: int=2
+        normal_window = self.normal_window#: int=3
+
         skip_ids = []
-        for idx in range(window, len(traj)):
+        traj_len = len(traj)
+        for idx in range(traj_len):
             trans = traj[idx]
             in_expert = trans[5]
-            if in_expert:
+            if in_expert and (idx > (window-1)) and (idx < len(traj)-window):
                 # first add this expert transition
-                self.constrained_replay_buffer.add(trans[0],
-                                                   trans[2],
-                                                   trans[1],
-                                                   trans[3],
-                                                   trans[4],
-                                                   trans[6],
-                                                   trans[7],
-                                                   trans[6],
-                                                   trans[7],
-                                                   1e3
-                                                   )
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
-                sub_traj = traj[idx - window: idx]
-                for jdx in range(window-5):
-                    sub_trans = sub_traj[jdx]
-                    if sub_trans[5] is False:
-                        discount_sum_r = 0
-                        for ndx, sub_tranj_trans in enumerate(sub_traj[jdx:]):
-                            print(idx+jdx+ndx,sub_tranj_trans[3])
-                            discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
-                        tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
-                        tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
-                        print(discount_sum_r, opt_Q, sub_Q)
-                        self.constrained_replay_buffer.add(sub_trans[0],
-                                                           sub_trans[2],
-                                                           sub_trans[1],
-                                                           sub_trans[3],
-                                                           sub_trans[4],
-                                                           tmp_sub_Q,
-                                                           tmp_opt_Q,
-                                                           discount_sum_r,
-                                                           discount_sum_r,
-                                                           window-jdx
-                                                           )
-                        skip_ids.append(idx - window + jdx)
+                sub_traj = traj[idx : window+idx]
+                discount_sum_r = 0
+                greedy_sum_r = 0
 
-        for s_id in range(len(traj)):#skip_ids:
-            trans = traj[s_id]
-            self.replay_buffer.add(trans[0],
-                                   trans[2],
-                                   trans[1],
-                                   trans[3],
-                                   trans[4],
-                                   None, None, None, None, None, use_ideal=False)
+                for ndx, sub_tranj_trans in enumerate(sub_traj):
+                    discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
 
-    def add_tuple_with_MC_to_buffer(
-        self,
-        traj,
-        window: int=15,
-    ) -> None:
-        skip_ids = []
-        for idx in range(window, len(traj)):
-            trans = traj[idx]
-            in_expert = trans[5]
-            if in_expert:
-                # first add this expert transition
+                
+                # note here the estimated MC-Q is only useful for accelerating the training in the begining
+                # continuing using sub_Q, opt_Q will introduce bias in the later stage of training
+                # when policy is able to generate good traj, replace upper bound with greedy R + nstep R
+                if episode_reward > self.expert_mean_reward:
+                    # reset upper bound instaed using pretrained MC-Q value
+                    for ndx, sub_tranj_trans in enumerate(sub_traj):
+                        if ndx < normal_window:
+                            r = optimal_r
+                        else:
+                            r = sub_tranj_trans[3]
+                        greedy_sum_r += self.gamma**ndx*r
+                    expert_sub_Q = discount_sum_r
+                    expert_opt_Q = greedy_sum_r
+                else:
+                    expert_sub_Q = opt_Q
+                    expert_opt_Q = opt_Q
+
+                #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
                 self.constrained_replay_buffer.add(trans[0],
-                                                   trans[2],
-                                                   trans[1],
-                                                   trans[3],
-                                                   trans[4],
-                                                   trans[6],
-                                                   trans[7],
-                                                   trans[6],
-                                                   trans[7],
-                                                   1e3
+                                           trans[1],
+                                           trans[2],
+                                           trans[3],
+                                           trans[4],
+                                           expert_sub_Q, # nstep suboptimal Q is the accumulative R
+                                           discount_sum_r, # nstep accumulative R
+                                           expert_opt_Q, # nstep MC-optimal Q
+                                           traj[idx+window][0], # state-action after window_step_th (lower-bound) 
+                                           traj[idx+window][2], # state-action after window_step_th (lower-bound) 
+                                           traj[idx+window][4], # check if after window_step_th is terminate state
+                                           self.gamma**window, # discounted gamma after window_step_th
+                                           )
+                        
+
+                # for the state-action before expert-similar state-action, do backward boostrapping
+                prev_id = idx - optimal_window
+                prev_sub_traj = traj[ prev_id: idx]
+                prev_trans = traj[prev_id]
+                prev_discount_sum_r = 0
+                prev_optimal_sum_r = 0
+
+                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
+                    prev_discount_sum_r += self.gamma**ndx*prev_sub_tranj_trans[3]
+
+                for ndx, prev_sub_tranj_trans in enumerate(prev_sub_traj):
+                    prev_optimal_sum_r += self.gamma**ndx*prev_optimal_sum_r
+
+                self.constrained_replay_buffer.add(prev_trans[0],
+                                                   prev_trans[1],
+                                                   prev_trans[2],
+                                                   prev_trans[3],
+                                                   prev_trans[4],
+                                                   prev_discount_sum_r + self.gamma**optimal_window * expert_sub_Q, #  nstep sum R + discounted nstep MC-optimal Q
+                                                   prev_discount_sum_r + self.gamma**optimal_window * discount_sum_r, # optimal_window+n step discounted accumulative R
+                                                   prev_optimal_sum_r + self.gamma**optimal_window * expert_opt_Q, # greedy optimal nstep sum R + discounted nstep MC-optimal Q
+                                                   traj[idx+window][0], # state-action after pred_id -> window_step_th (lower-bound) 
+                                                   traj[idx+window][2], # state-action after pred_id -> window_step_th (lower-bound) 
+                                                   traj[idx+window][4], # check if after window_step_th is terminate state
+                                                   self.gamma**(window+optimal_window), # discounted gamma after window_step_th
                                                    )
+            else:
+                # first add this expert transition
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
-                sub_traj = traj[idx - window: idx]
-                for jdx in range(window-5):
-                    sub_trans = sub_traj[jdx]
-                    if sub_trans[5] is False:
-                        discount_sum_r = 0
-                        for ndx, sub_tranj_trans in enumerate(sub_traj[jdx:]):
-                            print(idx+jdx+ndx,sub_tranj_trans[3])
-                            discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
-                        tmp_sub_Q = discount_sum_r + self.gamma**window * sub_Q
-                        tmp_opt_Q = discount_sum_r + self.gamma**window * opt_Q
-                        print(discount_sum_r, opt_Q, sub_Q)
-                        self.constrained_replay_buffer.add(sub_trans[0],
-                                                           sub_trans[2],
-                                                           sub_trans[1],
-                                                           sub_trans[3],
-                                                           sub_trans[4],
-                                                           tmp_sub_Q,
-                                                           tmp_opt_Q,
-                                                           discount_sum_r,
-                                                           discount_sum_r,
-                                                           window-jdx
-                                                           )
-                        skip_ids.append(idx - window + jdx)
+                tmp_end_idx = np.min((normal_window+idx, traj_len-1)) # in case tmp_window+idx > len(traj)
 
-        for s_id in range(len(traj)):#skip_ids:
-            trans = traj[s_id]
-            self.replay_buffer.add(trans[0],
-                                   trans[2],
-                                   trans[1],
-                                   trans[3],
-                                   trans[4],
-                                   None, None, None, None, None, use_ideal=False)
+                horizon_n = tmp_end_idx - idx
+                sub_traj = traj[idx : ]
+                discount_sum_r = 0
+                greedy_sum_r = 0
+                for ndx, sub_tranj_trans in enumerate(sub_traj):
+                    discount_sum_r += self.gamma**ndx*sub_tranj_trans[3]
+
+                for ndx, sub_tranj_trans in enumerate(sub_traj):
+                    greedy_sum_r += self.gamma**ndx*optimal_r
+
+                #print(discount_sum_r, opt_Q, sub_Q, discount_sum_r)
+                self.constrained_replay_buffer.add(trans[0],
+                                                   trans[1],
+                                                   trans[2],
+                                                   trans[3],
+                                                   trans[4],
+                                                   discount_sum_r, # nstep suboptimal Q is the accumulative R
+                                                   discount_sum_r, # nstep accumulative R
+                                                   greedy_sum_r, # # nstep greedy accumulative R_optimal set as the upper bound
+                                                   traj[idx+horizon_n][0],
+                                                   traj[idx+horizon_n][2],
+                                                   traj[idx+horizon_n][4],
+                                                   self.gamma**horizon_n
+                                                   )
+
+    def add_expert_trajs_to_buffer(self, parsed_trajs, value_dataset,  window=10,):  
+        window = self.forward_window#: int=10  
+        for traj in parsed_trajs:    
+            traj = np.array(traj)
+            for i in range(len(traj) - window):
+                prev_obs = traj[i][0]
+                act = traj[i][1]
+                obs = traj[i][2]
+                r = traj[i][3]
+                discounted_R = 0
+                for idx, sub_trans in enumerate(traj[i:i + window]):
+                    discounted_R += self.gamma**(idx) * sub_trans[3]
+                if value_dataset.value_type == 'v':
+                    inputs = th.FloatTensor(np.array([prev_obs]))
+                    sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
+                    opt_Q = value_dataset.opt_q_model.model(inputs).detach().numpy().flatten()[0]
+                elif value_dataset.value_type == 'q':
+                    inputs = th.FloatTensor(np.array([np.hstack([prev_obs, act])]))
+                    sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
+                    opt_Q = value_dataset.opt_q_model.model(inputs).detach().numpy().flatten()[0]
+                self.expert_replay_buffer.add(prev_obs,
+                                               obs,
+                                               act,
+                                               r,
+                                               False,
+                                               discounted_R,
+                                               discounted_R,
+                                               discounted_R,
+                                               traj[i + window][0],
+                                               traj[i + window][1],
+                                               False,
+                                               self.gamma**window)
+                self.replay_buffer.add(prev_obs,
+                                       obs,
+                                       act,
+                                       r,
+                                       False, None, None, None, None, None, use_ideal=False)
+
+                self.constrained_replay_buffer.add(prev_obs,
+                                               obs,
+                                               act,
+                                               r,
+                                               False,
+                                               discounted_R,
+                                               discounted_R,
+                                               discounted_R,
+                                               traj[i + window][0],
+                                               traj[i + window][1],
+                                               False,
+                                               self.gamma**window)
+                #print(discounted_R, r, i)
+

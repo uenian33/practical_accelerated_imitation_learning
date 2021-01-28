@@ -9,10 +9,22 @@
 env='BipedalWalker-v3'
 #env='MountainCarContinuous-v0'
 #env='LunarLanderContinuous-v2'
+#env='HalfCheetahBulletEnv-v0'
+#env='HumanoidBulletEnv-v0'
+#env='HopperBulletEnv-v0'
+#env='AntBulletEnv-v0'
+#env='Walker2dBulletEnv-v0'
+#env='BipedalWalker-v3'
+
+# The q constrain type specification
+#['None', ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
+
+q_bound_type='DDPGfD'
 DEMO_DIR='demo/'
 
 original_trainer='True'
-store_path="tmp/pwil/${env}${path_spec}${original_trainer}"
+current_date_time="`date +%Y%m%d%H%M%S`"
+store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_${current_date_time}"
 ep_steps=1000
 echo ${store_path}
 
@@ -28,5 +40,6 @@ python -m trainer \
 --state_only=$state_only \
 --ep_steps=$ep_steps \
 --subsampling=$subsampling \
---num_demonstrations=$num_demonstrations
+--num_demonstrations=$num_demonstrations \
+--q_bound_type=${q_bound_type}
 

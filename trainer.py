@@ -32,10 +32,12 @@ from stable_baselines3.common import logger
 
 import gym
 from gym.wrappers.time_limit import TimeLimit
+import pybullet_envs
 import pickle
 
 flags.DEFINE_string('workdir', None, 'Logging directory')
 flags.DEFINE_string('env_name', None, 'Environment name.')
+flags.DEFINE_string('q_bound_type', None, 'Define how to add constrain to q learning') #[None, ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
 flags.DEFINE_string('demo_dir', 'demo/', 'Directory of expert demonstrations.')
 flags.DEFINE_boolean('state_only', False,
                      'Use only state for reward computation')
@@ -64,7 +66,9 @@ from torchensemble import BaggingRegressor           # import ensemble method (e
 import torch
 import time
 
-
+RANDOM_SEED = 0
+torch.manual_seed(RANDOM_SEED)
+np.random.seed(RANDOM_SEED)
 
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
     obs = environment.reset()
@@ -82,7 +86,7 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
             prev_obs = obs
             inputs = torch.FloatTensor(np.array([obs]))
             # action =
-            action = bc_model.model(inputs).detach().numpy()[0] + (np.random.random_sample((4,)) - 0.5) * 1.3
+            action = bc_model.model(inputs).detach().numpy()[0] + (np.random.random_sample((environment.action_space.shape[-1],)) - 0.5) * 1.3
             # print(action)
             obs, reward, done, info = environment.step(action)
             obs_act = {'observation': prev_obs, 'action': action}
@@ -108,13 +112,24 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
 
 
 def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
-                            bc_dataset=None, 
-                            sa_classifier=None,
-                            bc_model=None,
-                            suboptimal_trajs=None):
+                             bc_dataset=None,
+                             sa_classifier=None,
+                             bc_model=None,
+                             suboptimal_trajs=None,
+                             ensemble_models_save_pth=None):
     if bc_dataset is None:
         # load expert supervised dataset
-        bc_dataset = utils.GT_dataset(demonstrations, environment)
+        bc_dataset = utils.GT_dataset(demonstrations, environment, 
+                                    imitation_rewarder=imitation_rewarder,
+                                    bc=True, 
+                                    nsteps=10, 
+                                    reward_gamma=0.99)
+
+    if bc_model is None:
+        bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
+                                                    y_dim=bc_dataset.ys[0].shape[0], epochs=200)
+        bc_model.train_BC()
+
 
     if sa_classifier is None:
         """ use RED as classifier
@@ -131,32 +146,43 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
                                                        epochs=220,
                                                        batch_size=512,
                                                        cuda=False,
-                                                       n_jobs=1)
+                                                       n_jobs=1,
+                                                       save_dir=ensemble_models_save_pth,
+                                                       value_type='q',
+                                                       dynamic_pair=False)
 
-    if bc_model is None:
-        bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
-                                                    y_dim=bc_dataset.ys[0].shape[0], epochs=200)
-        bc_model.train_BC()
 
     if suboptimal_trajs is None:
         # use noise injected BC to collect trajectories
-        suboptimal_trajs = generate_suboptimal_trajectories(environment, bc_model, imitation_rewarder, sa_classifier)
+        suboptimal_trajs = generate_suboptimal_trajectories(environment, bc_model, imitation_rewarder, sa_classifier,
+                                                            n_trajs=5)
 
     # init value dataset
-    value_dataset = utils.VALUE_dataset()
+    value_dataset = utils.VALUE_dataset(value_type='q')
+
     value_dataset.init_q_models(behavior_cloning.BehaviorCloning,
-                                x_dim=bc_dataset.xs[0].shape[0],
                                 suboptimal_trajs=suboptimal_trajs,
                                 demonstrations=demonstrations,
                                 window_size=10,
                                 rewarder=imitation_rewarder, epochs=2000)
 
-    value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs, demonstrations=demonstrations)
+    value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs, 
+                                                                        demonstrations=demonstrations,
+                                                                       )
     return bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset
 
 
-
 def main(_):
+
+    # the path of saved objects
+    pth_name = 'pkl/' + FLAGS.env_name + '_' + 'subsampling' + str(FLAGS.subsampling) + '_' + 'trajs' + str(FLAGS.num_demonstrations)
+    bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
+    sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
+    bc_model_pkl_pth = pth_name + '_bc_model.pkl'
+    suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
+    value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
+    ensemble_models_save_pth = 'pkl/ensemble_' + FLAGS.env_name + '_' + 'subsampling' + \
+        str(FLAGS.subsampling) + '_' + 'trajs' + str(FLAGS.num_demonstrations) + '/'
 
     from stable_baselines3.common.env_checker import check_env
     # It will check your custom environment and output additional warnings if needed
@@ -173,6 +199,12 @@ def main(_):
     demonstrations = utils.load_demonstrations(
         demo_dir=FLAGS.demo_dir, env_name=FLAGS.env_name, state_demo=False, traj_number=FLAGS.num_demonstrations)
 
+    imitation_rewarder = rewarder.PWILRewarder(
+        demonstrations,
+        subsampling=FLAGS.subsampling,
+        env_specs=[demonstrations[0][0]['action'].shape[0], demonstrations[0][0]['observation'].shape[0]],
+        num_demonstrations=FLAGS.num_demonstrations,
+        observation_only=FLAGS.state_only)
     # Load environment.
     # environment = utils.load_state_customized_environment(
     #    FLAGS.demo_dir, FLAGS.env_name, rewarder=imitation_rewarder, max_episode_steps=FLAGS.ep_steps)
@@ -181,24 +213,15 @@ def main(_):
     environment = gym.make(FLAGS.env_name)
     environment = TimeLimit(environment, max_episode_steps=1000)
 
+
+    environment.seed(RANDOM_SEED)
+    environment.action_space.seed(RANDOM_SEED)
+
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
 
+   
 
-    imitation_rewarder = rewarder.PWILRewarder(
-        demonstrations,
-        subsampling=FLAGS.subsampling,
-        env_specs=environment_spec,
-        num_demonstrations=FLAGS.num_demonstrations,
-        observation_only=FLAGS.state_only)
-
-    # the path of saved objects
-    pth_name = 'pkl/'+FLAGS.env_name + '_'+'subsampling'+str(FLAGS.subsampling)+'_'+'trajs'+str(FLAGS.num_demonstrations)
-    bc_dataset_pkl_pth = pth_name + '_bc_dataset.pkl'
-    sa_classifier_pkl_pth = pth_name + '_sa_classifier.pkl'
-    bc_model_pkl_pth = pth_name + '_bc_model.pkl'
-    suboptimal_trajs_pkl_pth = pth_name + '_suboptimal_trajs.pkl'
-    value_dataset_pkl_pth = pth_name + '_value_dataset.pkl'
     try:
         with open(bc_dataset_pkl_pth, 'rb') as inputs:
             bc_dataset = pickle.load(inputs)
@@ -214,12 +237,13 @@ def main(_):
 
         with open(value_dataset_pkl_pth, 'rb') as inputs:
             value_dataset = pickle.load(inputs)
-        
+
     except:
-        bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations, 
-                                                                                                        environment, 
-                                                                                                        imitation_rewarder)
-        
+        bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations,
+                                                                                                        environment,
+                                                                                                        imitation_rewarder,
+                                                                                                        ensemble_models_save_pth=ensemble_models_save_pth)
+
         with open(bc_dataset_pkl_pth, 'wb') as output:
             pickle.dump(bc_dataset, output, pickle.HIGHEST_PROTOCOL)
 
@@ -237,6 +261,7 @@ def main(_):
 
     # define cutomized td3
     use_acceleration = True
+
     model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
                 rewarder=imitation_rewarder,
                 reward_type='pwil',
@@ -244,60 +269,15 @@ def main(_):
                 value_dataset=value_dataset,
                 use_acceleration=use_acceleration,
                 expert_classifier=sa_classifier,
-                sub_Q_estimator=value_dataset.sub_q_model,
-                opt_Q_estimator=value_dataset.opt_q_model)
+                sub_Q_estimator=sa_classifier, # value_dataset.sub_q_model,
+                opt_Q_estimator=sa_classifier, # value_dataset.opt_q_model)
+                bound_type=FLAGS.q_bound_type)
 
     parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
-    for traj in parsed_trajs:
-        traj = np.array(traj)
-        for i in range(len(traj) - 10):
-            prev_obs = traj[i][0]
-            act = traj[i][1]
-            obs = traj[i][2]
-            r = traj[i][3]
-
-            discounted_sub_R = 0
-            for idx, sub_trans in enumerate(traj[i:i+10]):
-                discounted_sub_R += value_dataset.reward_gamma**(idx) * sub_trans[3]
-
-            if value_dataset.value_type == 'v':
-                inputs = torch.FloatTensor(np.array([prev_obs]))
-                sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
-            elif value_dataset.value_type == 'q':
-                inputs = torch.FloatTensor(np.array([np.hstack(prev_obs, act)]))
-                sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
-
-            model.constrained_replay_buffer.add(prev_obs,
-                                               obs,
-                                               act,
-                                               r,
-                                               False,
-                                               sub_Q,
-                                               discounted_sub_R,
-                                               sub_Q,
-                                               discounted_sub_R,
-                                               traj[i+10][0],
-                                               traj[i+10][1],
-                                               10)
-         
-            print(discounted_sub_R, r, i)
-    """
-    for expert_tuple in value_dataset.tuple_enums:
-        model.constrained_replay_buffer.add(expert_tuple[0], expert_tuple[1], expert_tuple[2], expert_tuple[3],
-                                            expert_tuple[4], False, expert_tuple[5], expert_tuple[6]
-                                                       new_obs_,
-                                                       buffer_action,
-                                                       reward_,
-                                                       done,
-                                                       tmp_sub_value,
-                                                       tmp_opt_value,
-                                                       tmp_sub_value,
-                                                       tmp_opt_value,
-                                                       1e3)
-    """
-
-    # model.sample_trajs(n_episodes=1)
-    # model.pretrain_critic_using_demo()
+   
+    #model.pretrain_actor_using_demo()
+    model.add_expert_trajs_to_buffer(parsed_trajs, value_dataset)
+    model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6)
 
     print("Logger outputs after training:", logger.Logger.CURRENT.output_formats)

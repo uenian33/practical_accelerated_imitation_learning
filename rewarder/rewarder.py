@@ -218,16 +218,21 @@ class PWILRewarder(object):
 
         agent_atom = self.scaler.transform(agent_atom)[0]
 
+        #print(self.expert_atoms.shape)
+        #print(agent_atom.shape)
         cost = 0.
         # As we match the expert's weights with the agent's weights, we might
         # raise an error due to float precision, we substract a small epsilon from
         # the agent's weights to prevent that.
         weight = 1. / self.time_horizon - 1e-6
         norms = np.linalg.norm(self.expert_atoms - agent_atom, axis=1)
-        # print(norms)
+        if norms.size == 1:
+            norms = np.append( norms, 10000) 
+            #print(norms)
         while weight > 0:
             # Get closest expert state action to agent's state action.
             argmin = norms.argmin()
+            #print(self.expert_weights.size)
             expert_weight = self.expert_weights[argmin]
 
             # Update cost and weights.

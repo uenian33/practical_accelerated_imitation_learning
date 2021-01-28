@@ -19,6 +19,7 @@ from torchensemble.utils import set_logger
 from sklearn.metrics.pairwise import euclidean_distances
 import numpy as np
 
+torch.manual_seed(0)
 
 def display_records(records, logger):
     msg = (
@@ -57,20 +58,44 @@ class EnsembleModels(object):
                  epochs=50,
                  batch_size=512,
                  cuda=False,
-                 n_jobs=1):
+                 n_jobs=1,
+                 save_model=True,
+                 save_dir=None,
+                 value_type='q',
+                 dynamic_pair=False):
         super(EnsembleModels, self).__init__()
+
+        if value_type=='q':
+            x_dim = bc_dataset.SAs[0].shape[0] 
+            if not dynamic_pair:
+                y_dim = 1
+                self.train_loader = bc_dataset.q_train_loader
+            else:
+                y_dim = bc_dataset.nextSs[0].shape[0] 
+                self.train_loader = bc_dataset.sa_train_loader
+        elif value_type=='v':
+            x_dim = bc_dataset.xs[0].shape[0] 
+            if not dynamic_pair:
+                y_dim = 1
+                self.train_loader = bc_dataset.v_train_loader
+            else:
+                y_dim = bc_dataset.ys[0].shape[0] 
+                self.train_loader = bc_dataset.train_loader
+
         # Define the ensemble
         self.model = BaggingRegressor(estimator=MLP,   # class of your base estimator
-                                      estimator_args={'x_dim': bc_dataset.xs[0].shape[0], 'y_dim': bc_dataset.ys[0].shape[0]},
+                                      estimator_args={'x_dim': x_dim, 'y_dim': y_dim},
                                       n_estimators=n_estimators,            # the number of base estimators
                                       cuda=cuda,
                                       n_jobs=n_jobs)
+
 
         self.lr = lr
         self.weight_decay = weight_decay
         self.epochs = epochs
         self.batch_size = batch_size
-        self.train_loader = bc_dataset.train_loader
+        self.save_model = save_model
+        self.save_dir = save_dir
         self.init_models()
 
     def init_models(self):
@@ -80,7 +105,9 @@ class EnsembleModels(object):
     def train_models(self):
         torch.manual_seed(0)
         tic = time.time()
-        self.model.fit(self.train_loader, self.lr, self.weight_decay, self.epochs, "Adam")
+
+        self.model.fit(self.train_loader, self.lr, self.weight_decay, self.epochs,
+                       "Adam", save_model=self.save_model, save_dir=self.save_dir)
         toc = time.time()
         training_time = toc - tic
 
@@ -92,8 +119,12 @@ class EnsembleModels(object):
             outputs.append(estimator(x)[-1].detach().numpy())
         return outputs
 
-    def predict_class(self, prev_obs, act, obs):
-        x = torch.FloatTensor((np.array([obs])))
+    def predict_class(self, prev_obs, act, obs, type='q'):
+        if type=='v':
+            x = torch.FloatTensor((np.array([prev_obs])))
+        elif type=='q':
+            x = torch.FloatTensor((np.array([np.hstack([prev_obs,act]).flatten()])))
+
         outputs = self.ensemble_predict(x)
         dist = np.max(euclidean_distances(outputs, outputs))
         if dist < self.thres:
@@ -128,126 +159,3 @@ class EnsembleModels(object):
         self.thres = self.mean + 0  # (self.maxd - self.mean) / self.std * 0.2
         print(self.std, self.mean, self.maxd, self.thres)
 
-
-class EnsembleModel_(object):
-    """docstring for EnsembleModel"""
-
-    def __init__(self,  # Hyper-parameters
-                 x_dim,
-                 y_dim,
-                 train_loader,
-                 n_estimators=5,
-                 lr=1e-3,
-                 weight_decay=5e-4,
-                 epochs=50,
-                 batch_size=512,
-                 cuda=False,
-                 n_jobs=1):
-        super(EnsembleModel, self).__init__()
-        self.n_estimators = n_estimators,
-        self.lr = lr,
-        self.weight_decay = weight_decay,
-        self.epochs = epochs
-        self.batch_size = batch_size
-        self.cuda = cuda
-        self.n_jobs = n_jobs
-        self.thres = 0
-
-        """self.model = BaggingRegressor(
-            estimator=MLP,
-            n_estimators=self.n_estimators,
-            cuda=self.cuda,
-            n_jobs=self.n_jobs
-        )
-        """
-
-        # Define the ensemble
-        self.train_loader = train_loader
-        self.model = BaggingRegressor(estimator=MLP,   # class of your base estimator
-                                      estimator_args={'x_dim': x_dim, 'y_dim': y_dim},
-                                      n_estimators=self.n_estimators,           # the number of base estimators
-                                      cuda=self.cuda,
-                                      n_jobs=self.n_jobs)
-
-        # self.init_ensemble_models()
-
-    def init_ensemble_models(self):
-        self.train_models()
-        self.generate_threshold()
-
-    def train_models(self):
-        torch.manual_seed(0)
-        tic = time.time()
-        self.model.fit(self.train_loader, self.lr, self.weight_decay, self.epochs, "Adam")
-        toc = time.time()
-        training_time = toc - tic
-
-        print('finish ensemble model training in ', training_time)
-
-    def ensemble_predict(self, x):
-        outputs = []
-        for idx, estimator in enumerate(self.model.estimators_):
-            outputs.append(estimator(data)[-1].detach().numpy())
-        return outputs
-
-    def predict_class(self, x):
-        outputs = self.ensemble_predict(x)
-        dist = np.max(euclidean_distances(outputs, outputs))
-        if dist < self.thres:
-            return True
-        else:
-            return False
-
-    def generate_threshold(self):
-        # train_loader, test_loader = load_data(1)
-        discs = []
-        predicts = None
-        for batch_idx, (data, target) in enumerate(self.train_loader):
-            outputs = []
-            for idx, estimator in enumerate(model.estimators_):
-                outputs.append(np.squeeze(estimator(data).detach().numpy()))
-            outputs = np.array(outputs)
-            outputs.resize(outputs.shape[1], outputs.shape[0])
-            if predicts is None:
-                predicts = outputs
-            else:
-                predicts = np.vstack((predicts, outputs))
-            # discs.append(np.max(euclidean_distances(outputs, outputs)))
-
-        discs = []
-        print("calculating ensemble differences for every training pair...")
-        for i in range(predicts.shape[0]):
-            discs.append(euclidean_distances(predicts[i].reshape(-1, 1), predicts[i].reshape(-1, 1)))
-            # print(predicts.shape)
-        self.std = np.std(discs)
-        self.mean = np.mean(discs)
-        self.maxd = np.max(discs)
-        self.thres = self.mean + (self.maxd - self.mean) / self.std * 0.5
-        print(self.std, self.mean, self.maxd, self.thres)
-        t()
-
-    def load_data(self, datasets, batch_size):
-        X_train, y_train = datasets
-        if not isinstance(batch_size, numbers.Integral):
-            msg = "`batch_size` should be an integer, but got {} instead."
-            raise ValueError(msg.format(batch_size))
-        try:
-            # Numpy array -> Tensor
-            X_train, y_train = (
-                torch.FloatTensor(X_train.toarray()),
-                torch.FloatTensor(Y_train.toarray()),
-            )
-        except:
-            X_train, y_train = (
-                torch.FloatTensor(np.array(X_train)),
-                torch.FloatTensor(np.array(y_train)),
-            )
-
-        # print(X_train)
-        # print(y_train)
-
-        # Tensor -> Data loader
-        train_data = TensorDataset(X_train, y_train)
-        train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-
-        return train_loader

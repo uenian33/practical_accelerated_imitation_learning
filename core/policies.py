@@ -15,6 +15,8 @@ from stable_baselines3.common.torch_layers import (
 )
 from stable_baselines3.common.type_aliases import Schedule
 
+th.manual_seed(0)
+
 def get_actor_critic_subcritic_arch(net_arch: Union[List[int], Dict[str, List[int]]]) -> Tuple[List[int], List[int]]:
     """
     Get the actor and critic network architectures for off-policy actor-critic algorithms (SAC, TD3, DDPG).
