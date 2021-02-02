@@ -262,10 +262,11 @@ class TD3(OffPolicyAlgorithm):
             else:
                 expert_weight = 0
             # critic_loss =  1*critic_loss_origin + 0*expert_weight*critic_loss_expert  #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            print(self.bound_type)
             if self.bound_type=='none' or self.bound_type is None:
                 critic_loss = 1*critic_loss_origin + 0.*critic_loss_expert + 0.*critic_loss_constrained_target #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
             elif self.bound_type=='DDPGfD':
-                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert + 0.3*critic_loss_nstep
+                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert + 0.2*critic_loss_nstep
             else:
                 critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert  + 0.3*critic_loss_constrained_target
 
