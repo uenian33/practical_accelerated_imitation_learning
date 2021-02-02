@@ -24,11 +24,14 @@ from rewarder import rewarder, ensemble_models, behavior_cloning
 import utils
 
 from core.TD3 import TD3
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 from stable_baselines3.common.noise import NormalActionNoise
+from stable_baselines3.common.cmd_util import make_vec_env
+
 import numpy as np
 
 from stable_baselines3.common import logger
+from stable_baselines3.common.utils import set_random_seed
 
 import gym
 from gym.wrappers.time_limit import TimeLimit
@@ -70,6 +73,24 @@ RANDOM_SEED = 0
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
+def make_env(env_id, rank, seed=0):
+    """
+    Utility function for multiprocessed env.
+    
+    :param env_id: (str) the environment ID
+    :param num_env: (int) the number of environment you wish to have in subprocesses
+    :param seed: (int) the inital seed for RNG
+    :param rank: (int) index of the subprocess
+    """
+    def _init():
+        env = gym.make(env_id)
+        env = TimeLimit(env, max_episode_steps=1000)
+        env.seed(seed + rank)
+        return env
+
+    set_random_seed(FLAGS.random_seed+seed)
+    return _init
+
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
     obs = environment.reset()
     trajectories = []
@@ -96,7 +117,6 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
             step_id += 1
             in_expert = sa_classifier.predict_class(prev_obs, action, obs)
             traj.append([prev_obs, action, obs, imitation_reward, done, in_expert])
-            environment.render()
             finished = done
             steps += 1
             if (steps > 999 and not finished) or finished:
@@ -112,26 +132,30 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
 
 
 def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
-                             bc_dataset=None,
-                             sa_classifier=None,
-                             bc_model=None,
-                             suboptimal_trajs=None,
-                             ensemble_models_save_pth=None):
-    if bc_dataset is None:
-        # load expert supervised dataset
+                             bc_dataset_pkl_pth=None,
+                             sa_classifier_pkl_pth=None,
+                             ensemble_models_save_pth=None,
+                             bc_model_pkl_pth=None,
+                             suboptimal_trajs_pkl_pth=None,
+                             value_dataset_pkl_pth=None):
+    try:
+        with open(bc_dataset_pkl_pth, 'rb') as inputs:
+            bc_dataset = pickle.load(inputs)
+    except: # load expert supervised dataset
         bc_dataset = utils.GT_dataset(demonstrations, environment, 
                                     imitation_rewarder=imitation_rewarder,
                                     bc=True, 
                                     nsteps=10, 
                                     reward_gamma=0.99)
+        with open(bc_dataset_pkl_pth, 'wb') as output:
+            pickle.dump(bc_dataset, output, pickle.HIGHEST_PROTOCOL)
 
-    if bc_model is None:
-        bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
-                                                    y_dim=bc_dataset.ys[0].shape[0], epochs=200)
-        bc_model.train_BC()
+    
 
-
-    if sa_classifier is None:
+    try:        
+        with open(sa_classifier_pkl_pth, 'rb') as inputs:
+                sa_classifier = pickle.load(inputs)
+    except:
         """ use RED as classifier
         sa_classifier = rewarder.REDRewarder(demonstrations, environment_spec[1],
                                              environment_spec[0], 128, state_only=FLAGS.state_only)
@@ -150,25 +174,47 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
                                                        save_dir=ensemble_models_save_pth,
                                                        value_type='q',
                                                        dynamic_pair=False)
+        with open(sa_classifier_pkl_pth, 'wb') as output:
+            pickle.dump(sa_classifier, output, pickle.HIGHEST_PROTOCOL)
 
+    try:
+        with open(bc_model_pkl_pth, 'rb') as inputs:
+            bc_model = pickle.load(inputs)
+    except:
+        bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
+                                                y_dim=bc_dataset.ys[0].shape[0], epochs=200)
+        bc_model.train_BC()
+        with open(bc_model_pkl_pth, 'wb') as output:
+            pickle.dump(bc_model, output, pickle.HIGHEST_PROTOCOL)
 
-    if suboptimal_trajs is None:
+    try:
+        with open(suboptimal_trajs_pkl_pth, 'rb') as inputs:
+            suboptimal_trajs = pickle.load(inputs)
+    except:
         # use noise injected BC to collect trajectories
         suboptimal_trajs = generate_suboptimal_trajectories(environment, bc_model, imitation_rewarder, sa_classifier,
                                                             n_trajs=5)
+        with open(suboptimal_trajs_pkl_pth, 'wb') as output:
+            pickle.dump(suboptimal_trajs, output, pickle.HIGHEST_PROTOCOL)
 
-    # init value dataset
-    value_dataset = utils.VALUE_dataset(value_type='q')
+    try:
+        with open(value_dataset_pkl_pth, 'rb') as inputs:
+            value_dataset = pickle.load(inputs)
+    except:
+        # init value dataset
+        value_dataset = utils.VALUE_dataset(value_type='q')
+        value_dataset.init_q_models(behavior_cloning.BehaviorCloning,
+                                    suboptimal_trajs=suboptimal_trajs,
+                                    demonstrations=demonstrations,
+                                    window_size=10,
+                                    rewarder=imitation_rewarder, epochs=100)
 
-    value_dataset.init_q_models(behavior_cloning.BehaviorCloning,
-                                suboptimal_trajs=suboptimal_trajs,
-                                demonstrations=demonstrations,
-                                window_size=10,
-                                rewarder=imitation_rewarder, epochs=2000)
-
-    value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs, 
-                                                                        demonstrations=demonstrations,
-                                                                       )
+        value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs, 
+                                                                            demonstrations=demonstrations,)
+        with open(value_dataset_pkl_pth, 'wb') as output:
+            pickle.dump(value_dataset, output, pickle.HIGHEST_PROTOCOL)
+        
+   
     return bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset
 
 
@@ -193,7 +239,7 @@ def main(_):
     print("Logger outputs at startup:", logger.Logger.CURRENT.output_formats)
 
     # set up logger
-    logger.configure("logs/" + FLAGS.env_name, ["stdout", "tensorboard"])
+    logger.configure(FLAGS.workdir, ["stdout", "tensorboard"]) #, ["stdout", "tensorboard"])
     print("Logger outputs before training:", logger.Logger.CURRENT.output_formats)
 
     demonstrations = utils.load_demonstrations(
@@ -212,66 +258,45 @@ def main(_):
     environment_spec = [demonstrations[0][0]['action'].shape[0], demonstrations[0][0]['observation'].shape[0]]
     environment = gym.make(FLAGS.env_name)
     environment = TimeLimit(environment, max_episode_steps=1000)
+    environment.seed(FLAGS.random_seed)
+    set_random_seed(FLAGS.random_seed)
+    
+    # Create the vectorized environment
+    #num_cpu =  1 # Number of processes to use
+    #environment = VecNormalize(DummyVecEnv([lambda: gym.make(FLAGS.env_name)]), norm_obs=True, norm_reward=True,clip_obs=10.)
+    #environment = SubprocVecEnv([make_env(FLAGS.env_name, i) for i in range(num_cpu)])
 
-
-    environment.seed(RANDOM_SEED)
-    environment.action_space.seed(RANDOM_SEED)
+    #environment.seed(RANDOM_SEED)
+    #environment.action_space.seed(RANDOM_SEED)
 
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0. * np.ones(n_actions))
 
-   
+    
+    bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations,
+                                                                                                    environment,
+                                                                                                    imitation_rewarder,
+                                                                                                    bc_dataset_pkl_pth=bc_dataset_pkl_pth,
+                                                                                                    sa_classifier_pkl_pth=sa_classifier_pkl_pth,
+                                                                                                    ensemble_models_save_pth=ensemble_models_save_pth,
+                                                                                                    bc_model_pkl_pth=bc_model_pkl_pth,
+                                                                                                    suboptimal_trajs_pkl_pth=suboptimal_trajs_pkl_pth,
+                                                                                                    value_dataset_pkl_pth=value_dataset_pkl_pth)
 
-    try:
-        with open(bc_dataset_pkl_pth, 'rb') as inputs:
-            bc_dataset = pickle.load(inputs)
-
-        with open(sa_classifier_pkl_pth, 'rb') as inputs:
-            sa_classifier = pickle.load(inputs)
-
-        with open(bc_model_pkl_pth, 'rb') as inputs:
-            bc_model = pickle.load(inputs)
-
-        with open(suboptimal_trajs_pkl_pth, 'rb') as inputs:
-            suboptimal_trajs = pickle.load(inputs)
-
-        with open(value_dataset_pkl_pth, 'rb') as inputs:
-            value_dataset = pickle.load(inputs)
-
-    except:
-        bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations,
-                                                                                                        environment,
-                                                                                                        imitation_rewarder,
-                                                                                                        ensemble_models_save_pth=ensemble_models_save_pth)
-
-        with open(bc_dataset_pkl_pth, 'wb') as output:
-            pickle.dump(bc_dataset, output, pickle.HIGHEST_PROTOCOL)
-
-        with open(sa_classifier_pkl_pth, 'wb') as output:
-            pickle.dump(sa_classifier, output, pickle.HIGHEST_PROTOCOL)
-
-        with open(bc_model_pkl_pth, 'wb') as output:
-            pickle.dump(bc_model, output, pickle.HIGHEST_PROTOCOL)
-
-        with open(suboptimal_trajs_pkl_pth, 'wb') as output:
-            pickle.dump(suboptimal_trajs, output, pickle.HIGHEST_PROTOCOL)
-
-        with open(value_dataset_pkl_pth, 'wb') as output:
-            pickle.dump(value_dataset, output, pickle.HIGHEST_PROTOCOL)
-
+    # start training
     # define cutomized td3
-    use_acceleration = True
-
     model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
                 rewarder=imitation_rewarder,
                 reward_type='pwil',
                 sl_dataset=bc_dataset,
                 value_dataset=value_dataset,
-                use_acceleration=use_acceleration,
+                use_acceleration=True,
                 expert_classifier=sa_classifier,
                 sub_Q_estimator=sa_classifier, # value_dataset.sub_q_model,
                 opt_Q_estimator=sa_classifier, # value_dataset.opt_q_model)
                 bound_type=FLAGS.q_bound_type)
+
+    model._set_expert_mean_reward(bc_dataset.mean_episode_reward)
 
     parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
    

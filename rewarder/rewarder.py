@@ -215,7 +215,8 @@ class PWILRewarder(object):
         else:
             agent_atom = np.concatenate([obs_act['observation'], obs_act['action']])
         agent_atom = np.expand_dims(agent_atom, axis=0)  # add dim for scaler
-
+        if agent_atom.ndim > 2:
+            agent_atom = agent_atom[0]
         agent_atom = self.scaler.transform(agent_atom)[0]
 
         #print(self.expert_atoms.shape)

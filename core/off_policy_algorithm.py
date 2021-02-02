@@ -175,6 +175,11 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         self.backward_window = 2
         self.normal_window = 3
 
+        self.expert_mean_reward = 300
+
+    def _set_expert_mean_reward(self, expert_mean_reward) -> None:
+        self.expert_mean_reward = expert_mean_reward * 0.6
+
     def _set_nstep_size(self,
                         forward_window=10,
                         backward_window=2,
@@ -559,10 +564,15 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
                 # Rescale and perform action
                 new_obs, origin_reward, done, infos = env.step(action)
-                obs_act = {'observation': self._last_obs[0], 'action': buffer_action[0]}
+                if self._vec_normalize_env is not None:
+                    origin_new_obs = self._vec_normalize_env.get_original_obs()
+                    obs_act = {'observation': origin_new_obs[0], 'action': buffer_action[0]}
+                    print(origin_new_obs, new_obs)
+                else:
+                    obs_act = {'observation': self._last_obs[0], 'action': buffer_action[0]}
                 imitation_reward = self.rewarder.compute_reward(obs_act)
                 reward = imitation_reward
-                # env.render()
+                #env.render()
 
                 self.num_timesteps += 1
                 episode_timesteps += 1
@@ -1161,7 +1171,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 obs_act = {'observation': self._last_obs[0], 'action': buffer_action[0]}
                 imitation_reward = self.rewarder.compute_reward(obs_act)
                 reward = imitation_reward
-                # env.render()
+                #env.render()
 
                 self.num_timesteps += 1
                 episode_timesteps += 1
@@ -1177,6 +1187,8 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 original_episode_reward += origin_reward
 
                 # Retrieve reward and episode length if using Monitor wrapper
+                #print(infos)
+                #t()
                 self._update_info_buffer(infos, done)
 
                 # Store data in replay buffer
@@ -1184,13 +1196,12 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                     # Store only the unnormalized version
                     if self._vec_normalize_env is not None:
                         new_obs_ = self._vec_normalize_env.get_original_obs()
-                        reward_ = self._vec_normalize_env.get_original_reward()
                     else:
                         # Avoid changing the original ones
-                        self._last_original_obs, new_obs_, reward_ = self._last_obs, new_obs, reward
+                        self._last_original_obs, new_obs_ = self._last_obs, new_obs
 
                     #print(self.critic_target(th.tensor(self._last_original_obs).float(), th.tensor(buffer_action).float()))
-                    replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, reward_,
+                    replay_buffer.add(self._last_original_obs, new_obs_, buffer_action, imitation_reward,
                                       done, None, None, None, None, None, use_ideal=False)
 
                 # checking if current <s,a> or <s> belongs to expert trajs
@@ -1218,10 +1229,10 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 """
                 if in_expert:
                     traj.append([self._last_original_obs,  new_obs_, buffer_action,
-                                 reward_, done, in_expert, tmp_sub_value, tmp_opt_value])
+                                 imitation_reward, done, in_expert, tmp_sub_value, tmp_opt_value])
                 else:
                     traj.append([self._last_original_obs,  new_obs_, buffer_action,
-                                 reward_, done, in_expert, None, None])
+                                 imitation_reward, done, in_expert, None, None])
 
                 self._last_obs = new_obs
                 # Save the unnormalized observation
@@ -1238,12 +1249,19 @@ class OffPolicyAlgorithm(BaseAlgorithm):
 
                 if 0 < n_steps <= total_steps:
                     break
+                if episode_reward > 200:
+                    use_expert_Q = False
+                else:
+                    use_expert_Q = True
 
                 if self.num_timesteps > 1000 and self.num_timesteps > self.learning_starts:
                     # If no `gradient_steps` is specified,
                     # do as many gradients steps as steps performed during the rollout
-                    self.train(batch_size=self.batch_size, gradient_steps=1,
-                               update_actor=True, weight_factor=self.num_timesteps % 1000)
+                    self.train(batch_size=self.batch_size, 
+                               gradient_steps=1,
+                               update_actor=True, 
+                               weight_factor=self.num_timesteps % 1000,
+                               use_expert_Q=use_expert_Q)
 
             self.add_tuple_with_nsteps_to_buffer(traj, episode_reward=episode_reward)
             # trajectories.append(traj)
@@ -1275,7 +1293,6 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         episode_reward,
         optimal_r: int=5
     ) -> None:
-        self.expert_mean_reward = 300
 
         window = self.forward_window#: int=10
         optimal_window = self.backward_window#: int=2

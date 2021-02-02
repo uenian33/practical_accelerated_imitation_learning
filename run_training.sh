@@ -6,12 +6,12 @@
 #env='Hopper-v2'
 #env='Ant-v2'
 #env='Walker2d-v2'
-env='BipedalWalker-v3'
+#env='BipedalWalker-v3'
 #env='MountainCarContinuous-v0'
 #env='LunarLanderContinuous-v2'
 #env='HalfCheetahBulletEnv-v0'
 #env='HumanoidBulletEnv-v0'
-#env='HopperBulletEnv-v0'
+env='HopperBulletEnv-v0'
 #env='AntBulletEnv-v0'
 #env='Walker2dBulletEnv-v0'
 #env='BipedalWalker-v3'
@@ -24,13 +24,15 @@ DEMO_DIR='demo/'
 
 original_trainer='True'
 current_date_time="`date +%Y%m%d%H%M%S`"
-store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_${current_date_time}"
-ep_steps=1000
+store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}/${current_date_time}"
+ep_steps=500
 echo ${store_path}
 
 state_only=True
 subsampling=20
 num_demonstrations=5
+
+random_seed=0
 
 python -m trainer \
 --workdir=${store_path} \
@@ -41,5 +43,6 @@ python -m trainer \
 --ep_steps=$ep_steps \
 --subsampling=$subsampling \
 --num_demonstrations=$num_demonstrations \
---q_bound_type=${q_bound_type}
+--q_bound_type=${q_bound_type} \
+--random_seed=$random_seed
 

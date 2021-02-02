@@ -150,7 +150,7 @@ class TD3(OffPolicyAlgorithm):
         self.critic = self.policy.critic
         self.critic_target = self.policy.critic_target
 
-    def train(self, gradient_steps: int, batch_size: int = 100, update_actor=False, weight_factor=0) -> None:
+    def train(self, gradient_steps: int, batch_size: int = 100, update_actor=False, weight_factor=0, use_expert_Q=True) -> None:
         # print('update')
         # Update learning rate according to lr schedule
         self._update_learning_rate([self.actor.optimizer, self.critic.optimizer])
@@ -216,7 +216,7 @@ class TD3(OffPolicyAlgorithm):
                 constrained_mask_upper = th.logical_not(targets_q_constrained > target_q_upper_bound).type(th.float)
                 
                 constrained_mask = constrained_mask_lower * constrained_mask_upper
-                targets_q_constrained_masked = constrained_mask_lower * targets_q_constrained + (1 - constrained_mask_lower) * target_q_real_nstep
+                targets_q_constrained_masked = constrained_mask_lower * targets_q_constrained + (1 - constrained_mask_lower) * target_q_lower_bound
                 targets_q_constrained_masked = constrained_mask_upper * targets_q_constrained + (1 - constrained_mask_upper) * target_q_upper_bound
                 #print(constrained_mask)
                 #target_q_lower_bound, _ = th.max(th.cat((target_q_real_nstep, targets_q_constrained), dim=1),dim=1, keepdim=True)
@@ -231,7 +231,7 @@ class TD3(OffPolicyAlgorithm):
 
             constrained_current_q_estimates = self.critic(constrained_replay_data.observations.float(), constrained_replay_data.actions.float())
             constrained_current_q_estimates1, constrained_current_q_estimates2  =  constrained_current_q_estimates
-            #""" first version of lower-bound loss
+            """ first version of lower-bound loss
             zero_tensors = th.zeros(constrained_current_q_estimates1.shape)
             lower_bound_filtered_q_dis1, _ = th.max(th.cat(((target_q_real_nstep - constrained_current_q_estimates1), zero_tensors), dim=1),dim=1, keepdim=True)
             lower_bound_filtered_q_dis2, _ = th.max(th.cat(((target_q_real_nstep - constrained_current_q_estimates2), zero_tensors), dim=1),dim=1, keepdim=True)
@@ -245,19 +245,30 @@ class TD3(OffPolicyAlgorithm):
             critic_loss_upper_constrained2 = th.mean(upper_bound_filtered_q_dis2**2)
             critic_loss_upper_constrained = sum([critic_loss_upper_constrained1, critic_loss_upper_constrained2])
             
-
-            #"""
+            """
+            critic_loss_nstep = sum([F.mse_loss(current_q, target_q_real_nstep) for current_q in constrained_current_q_estimates])
             # second version of lower-bound loss
+            """
             critic_loss_constrained1 = F.mse_loss(constrained_current_q_estimates1*constrained_mask, targets_q_constrained*constrained_mask)
             critic_loss_constrained2 = F.mse_loss(constrained_current_q_estimates2*constrained_mask, targets_q_constrained*constrained_mask)
             critic_loss_constrained_target = sum([critic_loss_constrained1, critic_loss_constrained2])
+            """
             critic_loss_constrained_target = sum([F.mse_loss(current_q, targets_q_constrained_masked) for current_q in constrained_current_q_estimates])
-            #critic_loss_constrained = (critic_loss_low_constrained + critic_loss_upper_constrained + critic_loss_constrained_target)
             
             #"""
             #print(target_q_real_nstep < target_q_upper_bound)
-           
-            critic_loss = 0.8*critic_loss_origin + 0.2*critic_loss_expert + 0.2*critic_loss_constrained_target #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            if use_expert_Q:
+                expert_weight = 0.2
+            else:
+                expert_weight = 0
+            # critic_loss =  1*critic_loss_origin + 0*expert_weight*critic_loss_expert  #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            if self.bound_type=='none' or self.bound_type is None:
+                critic_loss = 1*critic_loss_origin + 0.*critic_loss_expert + 0.*critic_loss_constrained_target #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            elif self.bound_type=='DDPGfD':
+                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert + 0.3*critic_loss_nstep
+            else:
+                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert  + 0.3*critic_loss_constrained_target
+
             critic_losses.append(critic_loss.item())
 
             # Optimize the critics
@@ -278,7 +289,7 @@ class TD3(OffPolicyAlgorithm):
                 hybrid_loss = 1 * actor_loss + 0. * bc_loss
 
                 logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
-                logger.record("train/acto_critic_loss", np.mean(actor_losses))
+                logger.record("train/actor_critic_loss", np.mean(actor_losses))
                 logger.record("train/bc_loss", np.mean(bc_losses))
                 logger.record("train/critic_loss", np.mean(critic_losses))
 

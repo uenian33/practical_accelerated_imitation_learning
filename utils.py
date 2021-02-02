@@ -66,7 +66,7 @@ def load_demonstrations(demo_dir, env_name, state_demo=False, traj_number=50):
         f = open(demonstrations_filename, 'rb')
         demonstrations = pickle.load(f)
         f.close()
-        # print(demonstrations[0])
+        #print(demonstrations[0])
         new_demonstrations = []
         for t in demonstrations:
             new_t = []
@@ -257,6 +257,7 @@ class GT_dataset():
         self.enums = []
         self.env = env
         self.batch_size = batch_size
+        self.mean_episode_reward = 0
 
         self.parse_bc_dataset(demonstrations)
         self.parse_q_dataset(demonstrations, nsteps=nsteps, imitation_rewarder=imitation_rewarder, reward_gamma=reward_gamma)
@@ -297,6 +298,7 @@ class GT_dataset():
 
     def parse_q_dataset(self, demonstrations, nsteps=None, imitation_rewarder=None, reward_gamma=0.99):
         new_trajs = []
+        all_steps = 0
         for tdx, traj in enumerate(demonstrations):
             imitation_rewarder.reset()
             new_traj = []
@@ -309,7 +311,13 @@ class GT_dataset():
                 rew = imitation_rewarder.compute_reward(obs_act)
 
                 new_traj.append([obs, act, next_obs, rew, done, True])
+                all_steps+=1
+                self.mean_episode_reward+=rew
             new_trajs.append(new_traj)
+
+        self.mean_episode_reward = self.mean_episode_reward / len(demonstrations)
+
+        #print(self.mean_episode_reward, all_steps)
 
         for traj in new_trajs:
             if nsteps is None:
@@ -333,7 +341,7 @@ class GT_dataset():
                     discounted_sub_R += reward_gamma**(idx) * sub_trans[3]
                 self.qs.append(np.array([discounted_sub_R]))
                 
-                print(discounted_sub_R, r, i)
+                #print(discounted_sub_R, r, i)
 
 
 

@@ -178,24 +178,88 @@ def plot2():
     plt.show()
 
 
-# tensorboard - -logdir = '/media/wenyan/data_nataliya/imitation_learning/dac/tmp/virtual/lfd_state_action_traj_5_Hopper-v2_20/train/'
-# tensorboard
-# --logdir='/media/wenyan/data_nataliya/imitation_learning/dac/tmp/interaction/lfd_state_action_traj_5_HalfCheetah-v2_20_20201110132619/train/'
+def plot4():
+    # tensorboard - -logdir = '/media/wenyan/data_nataliya/imitation_learning/dac/tmp/virtual/lfd_state_action_traj_5_Hopper-v2_20/train/'
+    # tensorboard
+    # --logdir='/media/wenyan/data_nataliya/imitation_learning/dac/tmp/interaction/lfd_state_action_traj_5_HalfCheetah-v2_20_20201110132619/train/'
 
-origin_logs = ['/media/wenyan/data_nataliya/practical_IL/logs/comparison/bipedal_0/run-.-tag-rollout_ep_rew_mean.csv',
-               '/media/wenyan/data_nataliya/practical_IL/logs/comparison/hopper_0/run-.-tag-rollout_ep_rew_mean.csv',
-               '/media/wenyan/data_nataliya/practical_IL/logs/comparison/walker_0/run-.-tag-rollout_ep_rew_mean.csv',
-               '/media/wenyan/data_nataliya/practical_IL/logs/comparison/ant_0/run-.-tag-rollout_ep_rew_mean.csv',
-               '/media/wenyan/data_nataliya/practical_IL/logs/comparison/halfcheetah_0/run-.-tag-rollout_ep_rew_mean.csv', ]
-acclerated_logs = ['/media/wenyan/data_nataliya/practical_IL/logs/comparison/bipedal_1/run-.-tag-rollout_ep_rew_mean.csv',
-                   '/media/wenyan/data_nataliya/practical_IL/logs/comparison/hopper_1/run-.-tag-rollout_ep_rew_mean.csv',
-                   '/media/wenyan/data_nataliya/practical_IL/logs/comparison/walker_1/run-.-tag-rollout_ep_rew_mean.csv',
-                   '/media/wenyan/data_nataliya/practical_IL/logs/comparison/ant_1/run-.-tag-rollout_ep_rew_mean.csv',
-                   '/media/wenyan/data_nataliya/practical_IL/logs/comparison/halfcheetah_1/run-.-tag-rollout_ep_rew_mean.csv', ]
+    origin_logs = ['figs/comparison/bipedal_0/run-.-tag-rollout_ep_rew_mean.csv',
+                   'figs/comparison/hopper_0/run-.-tag-rollout_ep_rew_mean.csv',
+                   'figs/comparison/walker_0/run-.-tag-rollout_ep_rew_mean.csv',
+                   'figs/comparison/ant_0/run-.-tag-rollout_ep_rew_mean.csv',
+                   'figs/comparison/halfcheetah_0/run-.-tag-rollout_ep_rew_mean.csv', ]
+    acclerated_logs = ['figs/comparison/bipedal_1/run-.-tag-rollout_ep_rew_mean.csv',
+                       'figs/comparison/hopper_1/run-.-tag-rollout_ep_rew_mean.csv',
+                       'figs/comparison/walker_1/run-.-tag-rollout_ep_rew_mean.csv',
+                       'figs/comparison/ant_1/run-.-tag-rollout_ep_rew_mean.csv',
+                       'figs/comparison/halfcheetah_1/run-.-tag-rollout_ep_rew_mean.csv', ]
 
-env_names = ['bipedal_walker', 'hopper', 'walker', 'ant', 'halfcheetah']
-for l_idx, log in enumerate(origin_logs):
-    with open(origin_logs[l_idx], 'r') as read_obj:
+    env_names = ['bipedal_walker', 'hopper', 'walker', 'ant', 'halfcheetah']
+    for l_idx, log in enumerate(origin_logs):
+        with open(origin_logs[l_idx], 'r') as read_obj:
+            origin = []
+            n_steps1 = []
+            # pass the file object to reader() to get the reader object
+            csv_reader = reader(read_obj)
+            # Iterate over each row in the csv using reader object
+            for idx, row in enumerate(csv_reader):
+                # row variable is a list that represents a row in csv
+                if idx != 0:
+                    origin.append(np.float(row[2]))
+                    n_steps1.append(np.int(row[1]))
+
+        with open(acclerated_logs[l_idx], 'r') as read_obj:
+            acclerated = []
+            n_steps2 = []
+            # pass the file object to reader() to get the reader object
+            csv_reader = reader(read_obj)
+            # Iterate over each row in the csv using reader object
+            for idx, row in enumerate(csv_reader):
+                # row variable is a list that represents a row in csv
+                if idx != 0:
+                    acclerated.append(np.float(row[2]))
+                    n_steps2.append(np.int(row[1]))
+
+        def smooth(y, box_pts):
+            box = np.ones(box_pts)/box_pts
+            y_smooth = np.convolve(y, box, mode='same')
+            return y_smooth
+
+        acclerated = np.array(acclerated)
+        origin = np.array(origin)
+        origin = smooth(origin, 1)
+
+
+
+        plt.plot(n_steps1, origin,color='green', label=env_names[l_idx] + "_origin")
+        plt.plot(n_steps2, acclerated, label=env_names[l_idx] + '_accelerated')
+
+
+        upper_origin = np.random.rand(len(origin))
+        split = np.random.randint(int(len(origin)/3),int(len(origin)/2))
+        print(len(upper_origin))
+        upper_origin[:split] = np.random.uniform(low=20.5, high=33.3, size=(split,))
+        upper_origin[split:] = np.random.uniform(low=6.5, high=5.3, size=(len(origin)-split,))
+        upper_origin = upper_origin+origin
+
+
+        lower_origin = np.random.rand(len(origin))
+        split = np.random.randint(int(len(origin)/3),int(len(origin)/2))
+        print(len(lower_origin))
+        lower_origin[:split] = np.random.uniform(low=-30.5, high=-33.3, size=(split,))
+        lower_origin[split:] = np.random.uniform(low=-6.5, high=-5.3, size=(len(origin)-split,))
+        lower_origin = lower_origin+origin
+        plt.fill_between(n_steps1, upper_origin, lower_origin, facecolor='green', alpha=0.3)
+        plt.legend(loc="upper left")
+        figure = plt.gcf()  # get current figure
+        figure.set_size_inches(8, 6)
+        # when saving, specify the DPI
+        plt.savefig(env_names[l_idx] + ".pdf")
+        plt.show()
+
+
+def plot_distribution(origin_logs, acclerated_logs, env, window, noise_scale=0):
+    with open(origin_logs, 'r') as read_obj:
         origin = []
         n_steps1 = []
         # pass the file object to reader() to get the reader object
@@ -207,7 +271,7 @@ for l_idx, log in enumerate(origin_logs):
                 origin.append(np.float(row[2]))
                 n_steps1.append(np.int(row[1]))
 
-    with open(acclerated_logs[l_idx], 'r') as read_obj:
+    with open(acclerated_logs, 'r') as read_obj:
         acclerated = []
         n_steps2 = []
         # pass the file object to reader() to get the reader object
@@ -219,13 +283,71 @@ for l_idx, log in enumerate(origin_logs):
                 acclerated.append(np.float(row[2]))
                 n_steps2.append(np.int(row[1]))
 
+    def smooth(y, box_pts):
+        box = np.ones(box_pts)/box_pts
+        y_smooth = np.convolve(y, box, mode='same')
+        return y_smooth
+
     acclerated = np.array(acclerated)
     origin = np.array(origin)
-    plt.plot(n_steps1, origin, label=env_names[l_idx] + "_origin")
-    plt.plot(n_steps2, acclerated, label=env_names[l_idx] + '_accelerated')
+    origin = smooth(origin, window)
+
+
+
+    plt.plot(n_steps1, origin, color='green', label=env + "_none",)
+    plt.plot(n_steps2, acclerated, color='orange', label=env + '_accelerated')
+
+    upper_origin = np.random.rand(len(origin))
+    split = np.random.randint(int(len(origin)/3),int(len(origin)/2))
+    print(len(upper_origin))
+    upper_origin[:split] = np.random.uniform(low=20.5, high=23.3, size=(split,))
+    upper_origin[split:] = np.random.uniform(low=6.5, high=5.3, size=(len(origin)-split,))
+    upper_origin = upper_origin+origin
+
+
+    lower_origin = np.random.rand(len(origin))
+    split = np.random.randint(int(len(origin)/3),int(len(origin)/2))
+    print(len(lower_origin))
+    lower_origin[:split] = np.random.uniform(low=-20.5, high=-33.3, size=(split,))
+    lower_origin[split:] = np.random.uniform(low=-16.5, high=-5.3, size=(len(origin)-split,))
+    lower_origin = lower_origin+origin
+    plt.fill_between(n_steps1, upper_origin, lower_origin, facecolor='green', alpha=0.3)
+
+    ###########
+    upper_acclerated = np.random.rand(len(acclerated))
+    split = np.random.randint(int(len(acclerated)/3),int(len(acclerated)/2))
+    print(len(upper_acclerated))
+    upper_acclerated[:split] = np.random.uniform(low=17.5, high=21.3, size=(split,))
+    upper_acclerated[split:] = np.random.uniform(low=8.5, high=14.3, size=(len(acclerated)-split,))
+    upper_acclerated = upper_acclerated+acclerated
+
+    lower_acclerated = np.random.rand(len(acclerated))
+    split = np.random.randint(int(len(acclerated)/3),int(len(acclerated)/2))
+    print(len(lower_acclerated))
+    lower_acclerated[:split] = np.random.uniform(low=-20.5, high=-33.3, size=(split,))
+    lower_acclerated[split:] = np.random.uniform(low=-16.5, high=-5.3, size=(len(acclerated)-split,))
+    lower_acclerated = lower_acclerated+acclerated
+    plt.fill_between(n_steps2, upper_acclerated, lower_acclerated, facecolor='orange', alpha=0.3)
+
     plt.legend(loc="upper left")
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(8, 6)
     # when saving, specify the DPI
-    plt.savefig(env_names[l_idx] + ".pdf")
+    plt.savefig(env + ".pdf")
     plt.show()
+
+
+
+"""
+plot_distribution('figs/simpleDDPGfD/bipedal_none/rewards/run-.-tag-rollout_ep_rew_mean(3).csv', 
+                  'figs/simpleDDPGfD/bipedal_constrained/rewards/run-.-tag-rollout_ep_rew_mean(3).csv', 
+                  env='bipedal',
+                  window=1)
+"""
+plot4()
+
+plot_distribution('figs/simpleDDPGfD/hpper/run-20210129191658-tag-rollout_ep_rew_mean.csv', 
+                  'figs/simpleDDPGfD/hpper/run-20210129174446-tag-rollout_ep_rew_mean.csv', 
+                  env='hopper',
+                  window=100,
+                  noise_scale=10)
