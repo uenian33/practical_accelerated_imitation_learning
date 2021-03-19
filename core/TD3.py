@@ -15,6 +15,7 @@ from core.off_policy_algorithm import OffPolicyAlgorithm
 import random
 
 th.manual_seed(0)
+random.seed(0)
 
 class TD3(OffPolicyAlgorithm):
     """
@@ -161,14 +162,19 @@ class TD3(OffPolicyAlgorithm):
             # print('update')
 
             # Sample replay buffer
-            buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
+            #buffers = self.replay_buffer.sample(batch_size, env=self._vec_normalize_env)
+            #replay_data = buffers[0]
             expert_replay_data = self.expert_replay_buffer.sample(batch_size, env=self._vec_normalize_env)
             constrained_replay_data = self.constrained_replay_buffer.sample(batch_size, env=self._vec_normalize_env)
-
-            replay_data = buffers[0]
+            state_action_data = self.state_action_buffer.sample(batch_size, env=self._vec_normalize_env)
             sl_id, (bc_obs, bc_acts) = random.choice(self.sl_dataset.enums)
 
             with th.no_grad():
+                # calculate the BC loss
+                pi_value = self.critic.q1_forward(state_action_data.observations, self.actor(state_action_data.observations))
+                exp_value = self.critic.q1_forward(state_action_data.observations, state_action_data.actions)
+                bc_filter = (exp_value > pi_value).type(th.float) 
+                     
                 # Select action according to policy and add clipped noise
                 # print(replay_data.actions)
                 noise = constrained_replay_data.actions.clone().data.normal_(0, self.target_policy_noise)
@@ -190,37 +196,93 @@ class TD3(OffPolicyAlgorithm):
                 target_q_expert, _ = th.min(targets_expert, dim=1, keepdim=True)
                 target_q_expert = expert_replay_data.nstep_reward + (1 - expert_replay_data.nth_dones) * expert_replay_data.nstep_gamma * target_q_expert
                 
-                # Compute the Lower bound and upper bound of Q when <s,a> is similar to expert
+                # Compute the nth Q after current <s,a> 
                 nth_noise = constrained_replay_data.nth_actions.clone().data.normal_(0, self.target_policy_noise)
                 nth_noise = nth_noise.clamp(-self.target_noise_clip, self.target_noise_clip)
                 nth_actions = (self.actor_target(constrained_replay_data.nth_observations) + noise).clamp(-1, 1)
                 nth_targets_q = th.cat(self.critic_target(constrained_replay_data.nth_observations.float(), 
                                                                 nth_actions.float()), dim=1)
-                nth_targets_q_constrained_, _ = th.min(targets_expert, dim=1, keepdim=True)
-                target_q_real_nstep = constrained_replay_data.nstep_reward + (1 - constrained_replay_data.dones) * constrained_replay_data.nstep_gamma * nth_targets_q_constrained_
-                target_q_sub_nstep = constrained_replay_data.subopt_values + (1 - constrained_replay_data.dones) * constrained_replay_data.nstep_gamma * nth_targets_q_constrained_
+                nth_targets_q, _ = th.min(targets_expert, dim=1, keepdim=True)
+                target_q_real_nstep = constrained_replay_data.nstep_reward + (1 - constrained_replay_data.nth_dones) * constrained_replay_data.nstep_gamma * nth_targets_q
+                #constrained_replay_data.nstep_reward + (1 - constrained_replay_data.nth_dones) * constrained_replay_data.nstep_gamma * nth_targets_q
+                target_q_sub_nstep = constrained_replay_data.subopt_values + (1 - constrained_replay_data.nth_dones) * constrained_replay_data.nstep_gamma * nth_targets_q
+                #constrained_replay_data.subopt_values +  (1 - constrained_replay_data.nth_dones) * constrained_replay_data.nstep_gamma * nth_targets_q
 
+                # Compute the prev nth Q before current <s,a> 
+                prev_nth_noise = constrained_replay_data.prev_nth_actions.clone().data.normal_(0, self.target_policy_noise)
+                prev_nth_noise = prev_nth_noise.clamp(-self.target_noise_clip, self.target_noise_clip)
+                prev_nth_actions = (self.actor_target(constrained_replay_data.prev_nth_observations) + noise).clamp(-1, 1)
+                prev_nth_targets_q = th.cat(self.critic_target(constrained_replay_data.prev_nth_observations.float(), 
+                                                                prev_nth_actions.float()), dim=1)
+                prev_nth_targets_q, _ = th.min(targets_expert, dim=1, keepdim=True)
+                prev_nth_targets_q = prev_nth_targets_q - self.gamma*constrained_replay_data.prev_nstep_reward
+
+                # calculate current target_q
                 noise = constrained_replay_data.actions.clone().data.normal_(0, self.target_policy_noise)
                 noise = noise.clamp(-self.target_noise_clip, self.target_noise_clip)
-                actions_constrained = (self.actor_target(constrained_replay_data.observations) + noise).clamp(-1, 1)
-                targets_constrained = th.cat(self.critic_target(constrained_replay_data.observations.float(), 
-                                                                actions_constrained.float()), dim=1)
-                targets_q_constrained, _ = th.min(targets_constrained, dim=1, keepdim=True)
-                targets_q_constrained = constrained_replay_data.rewards + (1 - constrained_replay_data.dones) * self.gamma * targets_q_constrained
+                actions_current = (self.actor_target(constrained_replay_data.observations) + noise).clamp(-1, 1)
+                targets_current = th.cat(self.critic_target(constrained_replay_data.observations.float(), 
+                                                                actions_current.float()), dim=1)
+                target_q_current, _ = th.min(targets, dim=1, keepdim=True)
+
+                if 'interaction_upper' in self.bound_type:
+                    greedy_r = self.intermediate_max_r
+                else:
+                    greedy_r = 5
+                    #target_q_upper_bound = 5+self.gamma*5 + (1 - constrained_replay_data.dones) * self.gamma**2 * targets_q_constrained
+                upper_n_step = 10
+                discounted_upper_r = 0
+                for u in range(upper_n_step):
+                    discounted_upper_r = discounted_upper_r + self.gamma**u*greedy_r
+                target_q_upper_bound = discounted_upper_r + (1 - constrained_replay_data.dones) * self.gamma**upper_n_step * nth_targets_q
                 
-                target_q_upper_bound = 5 + (1 - constrained_replay_data.dones) * self.gamma * targets_q_constrained
                 #target_q_upper_bound = constrained_replay_data.optimal_values + (1 - constrained_replay_data.dones) * constrained_replay_data.nstep_gamma * nth_targets_q_constrained_
                 target_q_lower_bound, _ = th.max(th.cat((target_q_real_nstep, target_q_sub_nstep), dim=1),dim=1, keepdim=True)
                 #target_q_lower_bound, _ = th.max(th.cat((target_q_lower_bound, targets_q_constrained), dim=1),dim=1, keepdim=True)
-                constrained_mask_lower = th.logical_not(targets_q_constrained < target_q_lower_bound).type(th.float) 
-                constrained_mask_upper = th.logical_not(targets_q_constrained > target_q_upper_bound).type(th.float)
                 
-                constrained_mask = constrained_mask_lower * constrained_mask_upper
-                targets_q_constrained_masked = constrained_mask_lower * targets_q_constrained + (1 - constrained_mask_lower) * target_q_lower_bound
-                targets_q_constrained_masked = constrained_mask_upper * targets_q_constrained + (1 - constrained_mask_upper) * target_q_upper_bound
-                #print(constrained_mask)
-                #target_q_lower_bound, _ = th.max(th.cat((target_q_real_nstep, targets_q_constrained), dim=1),dim=1, keepdim=True)
+                target_q_lower_bound = target_q_lower_bound * (1 - constrained_replay_data.dones)
+                target_q_upper_bound = target_q_upper_bound * (1 - constrained_replay_data.dones)
 
+               
+                if self.bound_type=='constrained_lower':
+                    constrained_mask_lower = th.logical_not(target_q < target_q_lower_bound).type(th.float)   
+                    targets_q_constrained_lower = (1 - constrained_mask_lower) * target_q + constrained_mask_lower * target_q_lower_bound
+                    targets_q_constrained_masked = targets_q_constrained_lower
+
+                elif self.bound_type=='nstep_lower':
+                    constrained_mask_lower = th.logical_not(target_q < target_q_real_nstep).type(th.float)  
+                    targets_q_constrained_lower = (1 - constrained_mask_lower) * target_q + constrained_mask_lower * target_q_real_nstep
+                    targets_q_constrained_masked = targets_q_constrained_lower
+
+                elif self.bound_type=='bellman_upper':
+                    constrained_mask_upper = th.logical_not(target_q > prev_nth_targets_q).type(th.float) 
+                    targets_q_constrained_upper = constrained_mask_upper * target_q + (1 - constrained_mask_upper) * prev_nth_targets_q
+                    targets_q_constrained_masked = targets_q_constrained_upper
+
+                elif self.bound_type=='upper':
+                    constrained_mask_upper = th.logical_not(target_q > target_q_upper_bound).type(th.float) 
+                    targets_q_constrained_upper = constrained_mask_upper * target_q + (1 - constrained_mask_upper) * target_q_upper_bound
+                    targets_q_constrained_masked = targets_q_constrained_upper
+
+                elif self.bound_type=='constrained_lower_upper':
+                    constrained_mask_lower = th.logical_not(target_q < target_q_lower_bound).type(th.float)  
+                    constrained_mask_upper = th.logical_not(target_q > target_q_upper_bound).type(th.float) 
+                    targets_q_constrained_lower = (1 - constrained_mask_lower) * target_q + constrained_mask_lower * target_q_lower_bound
+                    targets_q_constrained_upper = constrained_mask_upper * targets_q_constrained_lower + (1 - constrained_mask_upper) * target_q_upper_bound
+                    targets_q_constrained_masked = constrained_mask_upper * targets_q_constrained_lower + (1 - constrained_mask_upper) * target_q_upper_bound            
+                elif self.bound_type=='nstep_lower_upper':
+                    constrained_mask_lower = th.logical_not(target_q < target_q_real_nstep).type(th.float)  
+                    constrained_mask_upper = th.logical_not(target_q > target_q_upper_bound).type(th.float) 
+                    targets_q_constrained_lower = constrained_mask_lower * target_q + (1 - constrained_mask_lower) * target_q_real_nstep
+                    targets_q_constrained_upper = constrained_mask_upper * target_q + (1 - constrained_mask_upper) * target_q_upper_bound
+                    targets_q_constrained_masked = constrained_mask_upper * targets_q_constrained_lower + (1 - constrained_mask_upper) * target_q_upper_bound    
+                elif self.bound_type=='bellman_lower_upper':
+                    constrained_mask_lower = th.logical_not(target_q < target_q_real_nstep).type(th.float)  
+                    constrained_mask_upper = th.logical_not(target_q > prev_nth_targets_q).type(th.float) 
+                    targets_q_constrained_lower = (1 - constrained_mask_lower) * constrained_mask_lower * target_q +  constrained_mask_lower * target_q_real_nstep
+                    targets_q_constrained_upper = constrained_mask_upper * target_q + (1 - constrained_mask_upper) * prev_nth_targets_q
+                    targets_q_constrained_masked = constrained_mask_upper * targets_q_constrained_lower + (1 - constrained_mask_upper) * prev_nth_targets_q
+                
             # Get current Q estimates for each critic network
             current_q_estimates = self.critic(constrained_replay_data.observations.float(), constrained_replay_data.actions.float())
             # Compute critic loss
@@ -229,47 +291,61 @@ class TD3(OffPolicyAlgorithm):
             expert_current_q_estimates  = self.critic(expert_replay_data.observations.float(), expert_replay_data.actions.float())
             critic_loss_expert = sum([F.mse_loss(current_q, target_q_expert) for current_q in expert_current_q_estimates])
 
-            constrained_current_q_estimates = self.critic(constrained_replay_data.observations.float(), constrained_replay_data.actions.float())
-            constrained_current_q_estimates1, constrained_current_q_estimates2  =  constrained_current_q_estimates
             """ first version of lower-bound loss
-            zero_tensors = th.zeros(constrained_current_q_estimates1.shape)
-            lower_bound_filtered_q_dis1, _ = th.max(th.cat(((target_q_real_nstep - constrained_current_q_estimates1), zero_tensors), dim=1),dim=1, keepdim=True)
-            lower_bound_filtered_q_dis2, _ = th.max(th.cat(((target_q_real_nstep - constrained_current_q_estimates2), zero_tensors), dim=1),dim=1, keepdim=True)
+            zero_tensors = th.zeros(current_q_estimates.shape)
+            lower_bound_filtered_q_dis1, _ = th.max(th.cat(((target_q_real_nstep - current_q_estimates), zero_tensors), dim=1),dim=1, keepdim=True)
+            lower_bound_filtered_q_dis2, _ = th.max(th.cat(((target_q_real_nstep - current_q_estimates), zero_tensors), dim=1),dim=1, keepdim=True)
             critic_loss_low_constrained1 = th.mean(lower_bound_filtered_q_dis1**2)
             critic_loss_low_constrained2 = th.mean(lower_bound_filtered_q_dis2**2)
             critic_loss_low_constrained = sum([critic_loss_low_constrained1, critic_loss_low_constrained2])
             
-            upper_bound_filtered_q_dis1, _ = th.max(th.cat(((constrained_current_q_estimates1 - target_q_upper_bound), zero_tensors), dim=1),dim=1, keepdim=True)
-            upper_bound_filtered_q_dis2, _ = th.max(th.cat(((constrained_current_q_estimates2 - target_q_upper_bound), zero_tensors), dim=1),dim=1, keepdim=True)
+            upper_bound_filtered_q_dis1, _ = th.max(th.cat(((current_q_estimates - target_q_upper_bound), zero_tensors), dim=1),dim=1, keepdim=True)
+            upper_bound_filtered_q_dis2, _ = th.max(th.cat(((current_q_estimates - target_q_upper_bound), zero_tensors), dim=1),dim=1, keepdim=True)
             critic_loss_upper_constrained1 = th.mean(upper_bound_filtered_q_dis1**2)
             critic_loss_upper_constrained2 = th.mean(upper_bound_filtered_q_dis2**2)
             critic_loss_upper_constrained = sum([critic_loss_upper_constrained1, critic_loss_upper_constrained2])
             
             """
-            critic_loss_nstep = sum([F.mse_loss(current_q, target_q_real_nstep) for current_q in constrained_current_q_estimates])
+            critic_loss_nstep = sum([F.mse_loss(current_q, target_q_real_nstep) for current_q in current_q_estimates])
             # second version of lower-bound loss
             """
-            critic_loss_constrained1 = F.mse_loss(constrained_current_q_estimates1*constrained_mask, targets_q_constrained*constrained_mask)
-            critic_loss_constrained2 = F.mse_loss(constrained_current_q_estimates2*constrained_mask, targets_q_constrained*constrained_mask)
+            critic_loss_constrained1 = F.mse_loss(current_q_estimates*constrained_mask, targets_q_constrained*constrained_mask)
+            critic_loss_constrained2 = F.mse_loss(current_q_estimates*constrained_mask, targets_q_constrained*constrained_mask)
             critic_loss_constrained_target = sum([critic_loss_constrained1, critic_loss_constrained2])
             """
-            critic_loss_constrained_target = sum([F.mse_loss(current_q, targets_q_constrained_masked) for current_q in constrained_current_q_estimates])
             
             #"""
             #print(target_q_real_nstep < target_q_upper_bound)
-            if use_expert_Q:
-                expert_weight = 0.2
+            if use_expert_Q and random.random()>0.3:
+                expert_weight = 0.
             else:
-                expert_weight = 0
+                expert_weight = 0.
             # critic_loss =  1*critic_loss_origin + 0*expert_weight*critic_loss_expert  #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
-            print(self.bound_type)
-            if self.bound_type=='none' or self.bound_type is None:
-                critic_loss = 1*critic_loss_origin + 0.*critic_loss_expert + 0.*critic_loss_constrained_target #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            if self.bound_type=='none' or self.bound_type is None or self.bound_type=='None':
+                #print(self.bound_type,'none')
+                critic_loss = 1*critic_loss_origin  #0.2*(critic_loss_low_constrained + critic_loss_upper_constrained)
+            
             elif self.bound_type=='DDPGfD':
-                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert + 0.2*critic_loss_nstep
-            else:
-                critic_loss = 1*critic_loss_origin + expert_weight*critic_loss_expert  + 0.3*critic_loss_constrained_target
+                #print(self.bound_type)
+                critic_loss = 0.7*critic_loss_origin + 0.2*critic_loss_expert + 0.1*critic_loss_nstep
 
+            elif 'lower_upper' not in self.bound_type:
+                critic_loss_constrained_target = sum([F.mse_loss(current_q, targets_q_constrained_masked) for current_q in current_q_estimates])
+                critic_loss = 0.7*critic_loss_origin + 0.2*critic_loss_expert + 0.3*critic_loss_constrained_target
+            
+            elif 'lower_upper' in self.bound_type:
+                #"""
+                critic_loss_lower = sum([F.mse_loss(current_q, targets_q_constrained_lower) for current_q in current_q_estimates])
+                critic_loss_upper = sum([F.mse_loss(current_q, targets_q_constrained_upper) for current_q in current_q_estimates])
+                critic_loss_constrained_target = sum([F.mse_loss(current_q, targets_q_constrained_masked) for current_q in current_q_estimates])
+                #print(critic_loss_lower, critic_loss_upper, critic_loss_constrained_target)
+                critic_loss = 0.7*critic_loss_origin + 0.2*critic_loss_expert + 0.3*critic_loss_constrained_target #+ 0.15*critic_loss_constrained_target
+                """
+                critic_loss_constrained_target = sum([F.mse_loss(current_q, targets_q_constrained_masked) for current_q in current_q_estimates])
+                critic_loss = 0.5*critic_loss_origin + expert_weight*critic_loss_expert + 0.5*critic_loss_constrained_target
+                """
+
+        
             critic_losses.append(critic_loss.item())
 
             # Optimize the critics
@@ -280,14 +356,22 @@ class TD3(OffPolicyAlgorithm):
             # Delayed policy updates
             if gradient_step % self.policy_delay == 0:
                 # Compute actor loss
-                actor_loss = -self.critic.q1_forward(replay_data.observations, self.actor(replay_data.observations)).mean()
+                actor_loss = -self.critic.q1_forward(constrained_replay_data.observations, self.actor(constrained_replay_data.observations)).mean()
 
                 actor_losses.append(actor_loss.item())
                 # compute sl loss
             
-                bc_loss = sum([F.mse_loss(bc_acts.float(), self.actor(bc_obs.float()))])
-                bc_losses.append(bc_loss.item())
-                hybrid_loss = 1 * actor_loss + 0. * bc_loss
+                bc_eval_loss = sum([F.mse_loss(bc_acts.float(), self.actor(bc_obs.float()))])
+                bc_losses.append(bc_eval_loss.item())
+
+                self.use_bc=False
+                if self.use_bc:
+                    filtered_actions = (state_action_data.actions - self.actor(state_action_data.observations)) * bc_filter
+                    bc_loss = th.mean(filtered_actions**2)
+                    #print(bc_loss)
+                    hybrid_loss = 1 * actor_loss + 0.5 * bc_loss
+                else:
+                    hybrid_loss = actor_loss
 
                 logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
                 logger.record("train/actor_critic_loss", np.mean(actor_losses))
@@ -373,7 +457,7 @@ class TD3(OffPolicyAlgorithm):
             self.critic.optimizer.step()
         polyak_update(self.critic.parameters(), self.critic_target.parameters(), 1)
 
-    def pretrain_actor_using_demo(self, epochs=10):
+    def pretrain_actor_using_demo(self, epochs=30):
         sl_dataset = self.sl_dataset
         loss_fn = nn.MSELoss()
         epoch = 0

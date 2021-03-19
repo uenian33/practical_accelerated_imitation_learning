@@ -19,7 +19,7 @@ from stable_baselines3.common.type_aliases import GymEnv, Schedule, MaybeCallbac
 from stable_baselines3.common.utils import safe_mean
 from stable_baselines3.common.vec_env import VecEnv
 
-from core.buffers import IdealReplayBuffer, ValueReplayBuffer
+from core.buffers import IdealReplayBuffer, ValueReplayBuffer, StateActionReplayBuffer
 
 th.manual_seed(0)
 
@@ -176,6 +176,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         self.normal_window = 3
 
         self.expert_mean_reward = 300
+        self.intermediate_max_r = 3
 
     def _set_expert_mean_reward(self, expert_mean_reward) -> None:
         self.expert_mean_reward = expert_mean_reward * 0.6
@@ -208,6 +209,14 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             optimize_memory_usage=self.optimize_memory_usage,
         )
         self.expert_replay_buffer = ValueReplayBuffer(
+            self.buffer_size,
+            self.observation_space,
+            self.action_space,
+            self.device,
+            optimize_memory_usage=self.optimize_memory_usage,
+        )
+
+        self.state_action_buffer = StateActionReplayBuffer(
             self.buffer_size,
             self.observation_space,
             self.action_space,
@@ -305,7 +314,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         )
 
         callback.on_training_start(locals(), globals())
-
+        #self.env.render()
         while self.num_timesteps < total_timesteps:
             print('collecting rollout for learning')
             if not self.use_acceleration:
@@ -340,7 +349,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             if self.num_timesteps > 1000 and self.num_timesteps > self.learning_starts and update_model:
                 # If no `gradient_steps` is specified,
                 # do as many gradients steps as steps performed during the rollout
-                gradient_steps = 1  # self.gradient_steps if self.gradient_steps > 0 else rollout.episode_timesteps
+                gradient_steps = 30  # self.gradient_steps if self.gradient_steps > 0 else rollout.episode_timesteps
                 self.train(batch_size=self.batch_size, gradient_steps=gradient_steps,
                            update_actor=True, weight_factor=self.num_timesteps % 1000)
 
@@ -461,8 +470,9 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         fps = int(self.num_timesteps / (time.time() - self.start_time))
         logger.record("time/episodes", self._episode_num, exclude="tensorboard")
         if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
-            logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
-            logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
+            #print([ep_info["r"] for ep_info in self.ep_info_buffer])
+            logger.record("rollout/ep_rew_mean", [ep_info["r"] for ep_info in self.ep_info_buffer][-1])#safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
+            logger.record("rollout/ep_len_mean", [ep_info["l"] for ep_info in self.ep_info_buffer][-1])#safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
         logger.record("time/fps", fps)
         logger.record("time/time_elapsed", int(time.time() - self.start_time), exclude="tensorboard")
         logger.record("time/total timesteps", self.num_timesteps, exclude="tensorboard")
@@ -552,6 +562,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         while total_steps < n_steps or total_episodes < n_episodes:
             done = False
             episode_reward, episode_timesteps, original_episode_reward = 0.0, 0, 0.0
+
             self.rewarder.reset()
 
             while not done:
@@ -1172,6 +1183,8 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 imitation_reward = self.rewarder.compute_reward(obs_act)
                 reward = imitation_reward
                 #env.render()
+                if self.intermediate_max_r < imitation_reward:
+                    self.intermediate_max_r = imitation_reward
 
                 self.num_timesteps += 1
                 episode_timesteps += 1
@@ -1228,6 +1241,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                    1e3)
                 """
                 if in_expert:
+                    #print("in")
                     traj.append([self._last_original_obs,  new_obs_, buffer_action,
                                  imitation_reward, done, in_expert, tmp_sub_value, tmp_opt_value])
                 else:
@@ -1277,6 +1291,9 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                 # Log training infos
                 if log_interval is not None and self._episode_num % log_interval == 0:
                     self._dump_logs()
+                    if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
+                        logger.record("rollout/ep_imitation_mean", episode_reward)#safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
+            
                 print(episode_rewards, original_episode_reward, total_steps, total_episodes, continue_training)
 
         mean_reward = np.mean(episode_rewards) if total_episodes > 0 else 0.0
@@ -1303,7 +1320,13 @@ class OffPolicyAlgorithm(BaseAlgorithm):
         for idx in range(traj_len):
             trans = traj[idx]
             in_expert = trans[5]
-            if in_expert and (idx > (window-1)) and (idx < len(traj)-window):
+
+            prev_nth_discounted_R = 0
+            prev_id = np.max([idx - window, 0])
+            for istep, prev_sub_trans in enumerate(traj[prev_id:idx]):
+                prev_nth_discounted_R += self.gamma**(istep) * prev_sub_trans[3]
+
+            if False:#in_expert and (idx > (window-1)) and (idx < len(traj)-window):
                 # first add this expert transition
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
@@ -1344,6 +1367,9 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                            traj[idx+window][0], # state-action after window_step_th (lower-bound) 
                                            traj[idx+window][2], # state-action after window_step_th (lower-bound) 
                                            traj[idx+window][4], # check if after window_step_th is terminate state
+                                           traj[prev_id][0],
+                                           traj[prev_id][2],
+                                           prev_nth_discounted_R,
                                            self.gamma**window, # discounted gamma after window_step_th
                                            )
                         
@@ -1372,13 +1398,18 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                    traj[idx+window][0], # state-action after pred_id -> window_step_th (lower-bound) 
                                                    traj[idx+window][2], # state-action after pred_id -> window_step_th (lower-bound) 
                                                    traj[idx+window][4], # check if after window_step_th is terminate state
+                                                   traj[prev_id][0],
+                                                   traj[prev_id][2],
+                                                   prev_nth_discounted_R,
                                                    self.gamma**(window+optimal_window), # discounted gamma after window_step_th
                                                    )
+
+                #self.state_action_buffer.add(trans[0],trans[2])
             else:
                 # first add this expert transition
                 sub_Q = trans[-2]
                 opt_Q = trans[-1]
-                tmp_end_idx = np.min((normal_window+idx, traj_len-1)) # in case tmp_window+idx > len(traj)
+                tmp_end_idx = np.min((window+idx, traj_len-1)) # in case tmp_window+idx > len(traj)
 
                 horizon_n = tmp_end_idx - idx
                 sub_traj = traj[idx : ]
@@ -1402,29 +1433,31 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                    traj[idx+horizon_n][0],
                                                    traj[idx+horizon_n][2],
                                                    traj[idx+horizon_n][4],
+                                                   traj[prev_id][0],
+                                                   traj[prev_id][2],
+                                                   prev_nth_discounted_R,
                                                    self.gamma**horizon_n
                                                    )
 
-    def add_expert_trajs_to_buffer(self, parsed_trajs, value_dataset,  window=10,):  
-        window = self.forward_window#: int=10  
+    def add_expert_trajs_to_buffer(self, parsed_trajs, value_dataset,  max_window=10,):  
+        window = max_window#: int=10  
         for traj in parsed_trajs:    
             traj = np.array(traj)
-            for i in range(len(traj) - window):
+            for i in range(len(traj) - max_window):
                 prev_obs = traj[i][0]
                 act = traj[i][1]
                 obs = traj[i][2]
                 r = traj[i][3]
                 discounted_R = 0
+                #for window in range(max_window):
                 for idx, sub_trans in enumerate(traj[i:i + window]):
                     discounted_R += self.gamma**(idx) * sub_trans[3]
-                if value_dataset.value_type == 'v':
-                    inputs = th.FloatTensor(np.array([prev_obs]))
-                    sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
-                    opt_Q = value_dataset.opt_q_model.model(inputs).detach().numpy().flatten()[0]
-                elif value_dataset.value_type == 'q':
-                    inputs = th.FloatTensor(np.array([np.hstack([prev_obs, act])]))
-                    sub_Q = value_dataset.sub_q_model.model(inputs).detach().numpy().flatten()[0]
-                    opt_Q = value_dataset.opt_q_model.model(inputs).detach().numpy().flatten()[0]
+
+                prev_nth_discounted_R = 0
+                prev_id = np.max([i - window, 0])
+                for idx, prev_sub_trans in enumerate(traj[prev_id:i]):
+                    prev_nth_discounted_R += self.gamma**(idx) * prev_sub_trans[3]
+                
                 self.expert_replay_buffer.add(prev_obs,
                                                obs,
                                                act,
@@ -1436,7 +1469,11 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                traj[i + window][0],
                                                traj[i + window][1],
                                                False,
+                                               traj[prev_id][0],
+                                               traj[prev_id][1],
+                                               prev_nth_discounted_R,
                                                self.gamma**window)
+
                 self.replay_buffer.add(prev_obs,
                                        obs,
                                        act,
@@ -1454,6 +1491,12 @@ class OffPolicyAlgorithm(BaseAlgorithm):
                                                traj[i + window][0],
                                                traj[i + window][1],
                                                False,
+                                               traj[prev_id][0],
+                                               traj[prev_id][1],
+                                               prev_nth_discounted_R,
                                                self.gamma**window)
+
+                self.state_action_buffer.add(prev_obs,act)
                 #print(discounted_R, r, i)
+
 

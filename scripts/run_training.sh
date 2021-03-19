@@ -11,28 +11,28 @@
 #env='LunarLanderContinuous-v2'
 #env='HalfCheetahBulletEnv-v0'
 #env='HumanoidBulletEnv-v0'
-env='HopperBulletEnv-v0'
+#env='HopperBulletEnv-v0'
 #env='AntBulletEnv-v0'
-#env='Walker2dBulletEnv-v0'
-#env='BipedalWalker-v3'
+#env='Walker2DBulletEnv-v0'
+env='BipedalWalker-v3'
 
 # The q constrain type specification
 #['None', ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
 
-q_bound_type='DDPGfD'
+q_bound_type='nstep_lower' #'constrained_lower_upper' 'nstep_lower' 'nstep_lower_upper', nstep_lower_interaction_upper, bellman_lower_upper
 DEMO_DIR='demo/'
 
 original_trainer='True'
 current_date_time="`date +%Y%m%d%H%M%S`"
-store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}/${current_date_time}"
-ep_steps=500
-echo ${store_path}
+ep_steps=1000
 
 state_only=True
 subsampling=20
 num_demonstrations=5
 
 random_seed=0
+store_path="tmp/pwil/constrained_by_${q_bound_type}/${env}_subsampling_${subsampling}_numdemo_${num_demonstrations}_random_${random_seed}/${current_date_time}"
+echo ${store_path}
 
 python -m trainer \
 --workdir=${store_path} \

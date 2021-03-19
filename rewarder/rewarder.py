@@ -30,6 +30,7 @@ from torch.nn import functional as F
 
 from tqdm import tqdm
 
+random.seed(0)
 
 class StepType(enum.IntEnum):
     """Defines the status of a `TimeStep` within a sequence."""
@@ -243,6 +244,47 @@ class PWILRewarder(object):
                 self.expert_weights = np.delete(self.expert_weights, argmin, 0)
                 self.expert_atoms = np.delete(self.expert_atoms, argmin, 0)
                 norms = np.delete(norms, argmin, 0)
+            else:
+                cost += weight * norms[argmin]
+                self.expert_weights[argmin] -= weight
+                weight = 0
+
+        reward = self.reward_scale * np.exp(-self.reward_sigma * cost)
+        return reward.astype('float32')
+
+    def compute_wasserstein_reward(self, obs_act):
+        """Computes reward based on original wasserstein distance."""
+        # Scale observation and action.
+        if self.observation_only:
+            agent_atom = obs_act['observation']
+        else:
+            agent_atom = np.concatenate([obs_act['observation'], obs_act['action']])
+        agent_atom = np.expand_dims(agent_atom, axis=0)  # add dim for scaler
+        if agent_atom.ndim > 2:
+            agent_atom = agent_atom[0]
+        agent_atom = self.scaler.transform(agent_atom)[0]
+
+        #print(self.expert_atoms.shape)
+        #print(agent_atom.shape)
+        cost = 0.
+        # As we match the expert's weights with the agent's weights, we might
+        # raise an error due to float precision, we substract a small epsilon from
+        # the agent's weights to prevent that.
+        weight = 1. / self.time_horizon - 1e-6
+        norms = np.linalg.norm(self.expert_atoms - agent_atom, axis=1)
+        if norms.size == 1:
+            norms = np.append( norms, 10000) 
+            #print(norms)
+        while weight > 0:
+            # Get closest expert state action to agent's state action.
+            argmin = norms.argmin()
+            #print(self.expert_weights.size)
+            expert_weight = self.expert_weights[argmin]
+
+            # Update cost and weights.
+            if weight >= expert_weight:
+                weight -= expert_weight
+                cost += expert_weight * norms[argmin]
             else:
                 cost += weight * norms[argmin]
                 self.expert_weights[argmin] -= weight
