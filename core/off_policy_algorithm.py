@@ -1161,7 +1161,7 @@ class OffPolicyAlgorithm(BaseAlgorithm):
             self.actor.reset_noise()
 
         callback.on_rollout_start()
-        continue_training = True
+        continue_training = True 
 
         while total_steps < n_steps or total_episodes < n_episodes:
             done = False
