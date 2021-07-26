@@ -1,0 +1,27 @@
+v1: original pwil
+v2: mse_origin + mse[q, w_q]
+v3: mse_origin + mse[q, q_cliped]
+
+backups
+
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -s SeedStart -e SeedEnd -c type -d subsampling"
+   echo -e "\t-s SeedSatrt is the initial random seed for loop"
+   echo -e "\t-e SeedEnd is the end random seed for loop"
+   echo -e "\t-c type for specifying"
+   echo -e "\t-d subsampling for subsampling"
+   exit 1 # Exit script after printing help
+}
+
+while getopts "s:e:" opt
+do
+   case "$opt" in
+      s ) SeedStart="$OPTARG" ;;
+      e ) SeedEnd="$OPTARG" ;;
+      c ) q_bound_type="$OPTARG" ;;
+      d ) subsampling="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done

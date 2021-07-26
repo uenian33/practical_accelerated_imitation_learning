@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, Tuple
 
 import gym
 import torch as th
@@ -116,7 +116,7 @@ class Actor(BasePolicy):
         return self.forward(observation, deterministic=deterministic)
 
 
-class TD3Policy(BasePolicy):
+class TD3Policy_origin(BasePolicy):
     """
     Policy class (with both actor and critic) for TD3.
 
@@ -257,7 +257,7 @@ class TD3Policy(BasePolicy):
         return self.actor(observation, deterministic=deterministic)
 
 
-class TD3Policy_plus(BasePolicy):
+class TD3Policy(BasePolicy):
     """
     Policy class (with both actor and critic) for TD3.
 
@@ -312,7 +312,7 @@ class TD3Policy_plus(BasePolicy):
             else:
                 net_arch = []
 
-        actor_arch, critic_arch, sub_critic_arch = get_actor_critic_subcritic_arch(net_arch)
+        actor_arch, critic_arch, subcritic_arch = get_actor_critic_subcritic_arch(net_arch)
 
         self.net_arch = net_arch
         self.activation_fn = activation_fn

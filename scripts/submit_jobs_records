@@ -1,0 +1,402 @@
+sbatch scripts/simple_bound_scripts/Walker.sh -s 1 -e 5
+sbatch scripts/simple_bound_scripts/Walker.sh -s 5 -e 10
+sbatch scripts/simple_bound_scripts/Ant.sh-s 1 -e 5
+sbatch scripts/simple_bound_scripts/Ant.sh -s 5 -e 10
+sbatch scripts/simple_bound_scripts/Bipedal.sh-s 1 -e 5
+sbatch scripts/simple_bound_scripts/Bipedal.sh -s 5 -e 10
+sbatch scripts/simple_bound_scripts/Humanoid.sh-s 1 -e 5
+sbatch scripts/simple_bound_scripts/Humanoid.sh -s 5 -e 10
+sbatch scripts/simple_bound_scripts/Hopper.sh-s 1 -e 5
+sbatch scripts/simple_bound_scripts/Hopper.sh -s 5 -e 10
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh-s 1 -e 5
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh -s 5 -e 10
+
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  none 1 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 none 1 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 none 1 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 none 1 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 none 1 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 none 1 True 5 
+
+710:
+- first only critic_loss + critic_bound_loss, new_wasserstein_q
+- 2nd q constraine, bound_on_q
+- 3rd two loss for actor, dual_actor_loss
+- 1 subsampling, none
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 upper 20 True 5 
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper 20 True 5 
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  1_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 1_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 1_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 1_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 1_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 1_upper 20 True 5 
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  1_constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 1_constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 1_constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 1_constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 1_constrained_lower_upper 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 1_constrained_lower_upper 20 True 5 
+
+711
+
+modified previous constrain comparison experiments
+
+- upper
+- constrained_upper_lower
+- upper (set wasserstein_reward as 1)
+- constrained_upper_lower (set wasserstein_reward as 1)
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 upper_10step 20 True 5 
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper_10step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper_10step 20 True 5 
+
+
+713 
+reward only based on min distances
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  min_distance 20 False 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 min_distance 20 False 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 min_distance 20 False 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 min_distance 20 False 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 min_distance 20 False 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 min_distance 20 False 5 
+
+ target_q = w_target_q
+ critic_loss_origin = sum([F.mse_loss(current_q, target_q) for current_q in current_q_estimates])
+
+714 1:00 a.m
+
+modified previous constrain comparison experiments
+
+- upper (set upper bound reward as 5.)
+- constrained_upper_lower (set upper bound reward as 5.)
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 upper_2step 20 True 5 
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper_2step 20 True 5 
+
+
+714 3:00 a.m
+
+modified previous constrain comparison experiments
+
+changed the critic loss to:
+critic_loss_lower_upper = critic_loss_lower + critic_loss_upper
+critic_loss = 1 * critic_loss_origin + expert_weight * critic_loss_expert + 0.3 * critic_loss_lower_upper
+
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  proper_constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 proper_constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 proper_constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 proper_constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 proper_constrained_lower_upper_2step 20 True 5
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 proper_constrained_lower_upper_2step 20 True 5 
+
+714 10 am
+find the shell script q_type arg was not correctly specified and used
+resubmit all experiments
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  upper 20 True 5 upper_2step
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 upper 20 True 5 upper_2step
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 upper 20 True 5 upper_2step
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 upper 20 True 5 upper_2step
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 upper 20 True 5 upper_2step
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 upper 20 True 5 upper_2step 
+
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper 20 True 5 constrained_lower_upper_2step 
+
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper 20 True 5 tight_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper 20 True 5 tight_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper 20 True 5 tight_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper 20 True 5 tight_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper 20 True 5 tight_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper 20 True 5 tight_constrained_lower_upper 
+
+
+720
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper 
+
+
+
+sbatch scripts/simple_bound_scripts/Walker.sh  1  10  none 20 True 5 test_none
+
+sbatch scripts/simple_bound_scripts/Ant.sh 1 10 none 20 True 5 test_none
+
+sbatch scripts/simple_bound_scripts/Bipedal.sh 1 10 none 20 True 5 test_none
+
+sbatch scripts/simple_bound_scripts/Humanoid.sh 1 10 none 20 True 5 test_none
+
+sbatch scripts/simple_bound_scripts/Hopper.sh 1 10 none 20 True 5 test_none
+
+sbatch scripts/simple_bound_scripts/Halfcheetah.sh 1 10 none 20 True 5 test_none 
+
+
+test none constrain
+sh scripts/run_all.sh 1  10  none 20 True 5 test_none 
+
+rerun constrain
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper 
+
+rerun static reward upper -constrain
+sh scripts/run_all.sh 1 10 upper 20 True 5 upper_2step 
+sh scripts/run_all.sh  1  10  constrained_lower_upper 20 True 5 constrained_lower_upper_2step
+
+
+rerun constant reward upper -constrain
+sh scripts/run_all.sh 1 10 upper 20 True 5 upper_2step_constant 
+sh scripts/run_all.sh  1  10  constrained_lower_upper 20 True 5 constrained_lower_upper_2step_constant
+
+changed weight for critic_loss_lower_upper to 0.5 and critic_loss_origin to 0.5
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_weight05
+
+
+change the 2nd reward to 5
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_constant
+
+
+test only upper
+sh scripts/run_all.sh 1 10 upper 20 True 5 mix_ahead_upper
+
+test upper with static
+sh scripts/run_all.sh 1 10 upper 20 True 5 mix_ahead_upper_constant
+
+
+test only lower
+sh scripts/run_all.sh 1 10 constrained_lower 20 True 5 mix_ahead_lower
+
+test 2 step lower and 1 step upper
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_1stepupper
+
+
+test 2 step lower and 1 step upper, weight as 0.5  + 0.5 * critic_loss_lower_upper
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_1stepupper_weight05
+
+
+test 2 step lower and 1 step upper, weight as 0.1  + 0.1 * critic_loss_lower_upper
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_1stepupper_weight01
+
+
+test 2 step lower and 1 step upper, weight as 0.  + 0. * critic_loss_lower_upper
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_1stepupper_weight00
+
+
+test 2 step lower and 1 step upper, weight as 0.3  + 0.3 * critic_loss_lower_upper and 5 step lower
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_5steplower—1stepupper_weight03
+
+
+test 2 step lower and 1 step upper, weight as 0.15  + 0.15 * critic_loss_lower_upper and 5 step lower
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_5steplower—1stepupper_weight015
+
+
+0722
+
+test only fusion with nstep loss, nstep is 5
+sh scripts/run_all.sh 1 10 nstep_only 20 True 5 5step_only
+
+test only fusion with nstep loss, nstep is 2
+sh scripts/run_all.sh 1 10 nstep_only 20 True 5 2step_only
+
+test 2 step lower and 1 step upper, weight as 0.3  + 0.3 * critic_loss_lower_upper and 10 step lower
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_10steplower—1stepupper_weight03
+
+test only fusion with nstep loss, nstep is 10
+sh scripts/run_all.sh 1 10 nstep_only 20 True 5 10step_only
+
+test 2 step lower and 1 step upper, weight as 0.3  + 0.3 * critic_loss_lower_upper and 6 step lower
+sh scripts/run_all.sh 1 10 constrained_lower_upper 20 True 5 mix_ahead_constrained_lower_upper_6steplower—1stepupper_weight03
+
+test only fusion with nstep loss, nstep is 6
+sh scripts/run_all.sh 1 10 nstep_only 20 True 5 6step_only
+
+
+0723
+test only fusion with optimal tight loss, optimal tight is 2
+sh scripts/run_all.sh 1 10 optimal_tight 20 True 5 optimal_tight_2
+
+
+test only fusion with optimal tight loss, optimal tight is 6
+sh scripts/run_all.sh 1 10 optimal_tight 20 True 5 optimal_tight_6
+
+
+test only fusion with optimal tight loss, optimal tight is 10
+sh scripts/run_all.sh 1 10 optimal_tight 20 True 5 optimal_tight_10
+
+
+test using optimal tight loss with greedy sum reward as lower bound, nstep is 2
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_optimal_tight_2
+
+
+test using optimal tight loss with greedy sum reward as lower bound, nstep is 6
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_optimal_tight_6
+
+
+test using optimal tight loss with greedy sum reward as lower bound, nstep is 10
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_optimal_tight_10
+
+
+0725
+
+
+
+test using optimal hybrid loss with greedy sum reward as lower bound, nstep is 2
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_hybrid_tight_2
+
+
+test using optimal hybrid loss with greedy sum reward as lower bound, nstep is 6
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_hybrid_tight_6
+
+
+test using optimal hybrid loss with greedy sum reward as lower bound, nstep is 10
+sh scripts/run_all.sh 1 10 constrained_optimal_tight 20 True 5 constrained_hybrid_tight_10
+
+
+0726
+
+test only fusion with optimal tight loss, optimal tight is 2
+sh scripts/run_all.sh 1 10 optimal_tight 20 True 5 optimal_tight_2

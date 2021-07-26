@@ -1,0 +1,8 @@
+sbatch scripts/Walker.sh
+sbatch scripts/Ant.sh
+sbatch scripts/Bipedal.sh
+sbatch scripts/Humanoid.sh
+sbatch scripts/Hopper.sh
+sbatch scripts/Halfcheetah.sh
+
+

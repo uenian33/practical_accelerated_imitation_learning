@@ -40,7 +40,8 @@ import pickle
 
 flags.DEFINE_string('workdir', None, 'Logging directory')
 flags.DEFINE_string('env_name', None, 'Environment name.')
-flags.DEFINE_string('q_bound_type', None, 'Define how to add constrain to q learning') #[None, ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
+# [None, ,'DDPGfD','standard_lower_bound','expert_lower_bound','expert_upper_bound','target_bound','hybrid']
+flags.DEFINE_string('q_bound_type', None, 'Define how to add constrain to q learning')
 flags.DEFINE_string('demo_dir', 'demo/', 'Directory of expert demonstrations.')
 flags.DEFINE_boolean('state_only', False,
                      'Use only state for reward computation')
@@ -73,10 +74,11 @@ RANDOM_SEED = 0
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
+
 def make_env(env_id, rank, seed=0):
     """
     Utility function for multiprocessed env.
-    
+
     :param env_id: (str) the environment ID
     :param num_env: (int) the number of environment you wish to have in subprocesses
     :param seed: (int) the inital seed for RNG
@@ -88,11 +90,12 @@ def make_env(env_id, rank, seed=0):
         env.seed(seed + rank)
         return env
 
-    set_random_seed(FLAGS.random_seed+seed)
+    set_random_seed(FLAGS.random_seed + seed)
     return _init
 
+
 def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classifier, n_trajs=15):
-    environment.render()
+    #environment.render()
     obs = environment.reset()
     trajectories = []
     for ep in range(n_trajs):
@@ -110,7 +113,7 @@ def generate_suboptimal_trajectories(environment, bc_model, rewarder, sa_classif
             # action =
             action = bc_model.model(inputs).detach().numpy()[0]
 
-            action = action #+ (np.random.random_sample((environment.action_space.shape[-1],)) - 0.5) * 1.3
+            action = action  # + (np.random.random_sample((environment.action_space.shape[-1],)) - 0.5) * 1.3
             obs, reward, done, info = environment.step(action)
             obs_act = {'observation': prev_obs, 'action': action}
             imitation_reward = rewarder.compute_reward(obs_act)
@@ -143,21 +146,20 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
     try:
         with open(bc_dataset_pkl_pth, 'rb') as inputs:
             bc_dataset = pickle.load(inputs)
-    except: # load expert supervised dataset
-        bc_dataset = utils.GT_dataset(demonstrations, environment, 
-                                    imitation_rewarder=imitation_rewarder,
-                                    bc=True, 
-                                    nsteps=10, 
-                                    reward_gamma=0.99)
+    except:  # load expert supervised dataset
+        bc_dataset = utils.GT_dataset(demonstrations, environment,
+                                      imitation_rewarder=imitation_rewarder,
+                                      bc=True,
+                                      nsteps=10,
+                                      reward_gamma=0.99)
         with open(bc_dataset_pkl_pth, 'wb') as output:
             pickle.dump(bc_dataset, output, pickle.HIGHEST_PROTOCOL)
 
-    
     print(bc_dataset.xs[0].shape, bc_dataset.ys[0].shape, )
     print(environment.action_space.shape, environment.observation_space.shape)
-    try:        
+    try:
         with open(sa_classifier_pkl_pth, 'rb') as inputs:
-                sa_classifier = pickle.load(inputs)
+            sa_classifier = pickle.load(inputs)
     except:
         """ use RED as classifier
         sa_classifier = rewarder.REDRewarder(demonstrations, environment_spec[1],
@@ -167,7 +169,7 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
         """
 
         sa_classifier = ensemble_models.EnsembleModels(bc_dataset,
-                                                       n_estimators=5,
+                                                       n_estimators=3,
                                                        lr=1e-3,
                                                        weight_decay=5e-4,
                                                        epochs=220,
@@ -185,7 +187,7 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
             bc_model = pickle.load(inputs)
     except:
         bc_model = behavior_cloning.BehaviorCloning(train_loader=bc_dataset.train_loader, x_dim=bc_dataset.xs[0].shape[0],
-                                                y_dim=bc_dataset.ys[0].shape[0], epochs=800)
+                                                    y_dim=bc_dataset.ys[0].shape[0], epochs=800)
         bc_model.train_BC()
         with open(bc_model_pkl_pth, 'wb') as output:
             pickle.dump(bc_model, output, pickle.HIGHEST_PROTOCOL)
@@ -212,12 +214,11 @@ def init_datasets_and_models(demonstrations, environment, imitation_rewarder,
                                     window_size=10,
                                     rewarder=imitation_rewarder, epochs=100)
 
-        value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs, 
+        value_dataset.create_suboptimal_value_datasets_from_bc_trajectories(suboptimal_trajs,
                                                                             demonstrations=demonstrations,)
         with open(value_dataset_pkl_pth, 'wb') as output:
             pickle.dump(value_dataset, output, pickle.HIGHEST_PROTOCOL)
-        
-   
+
     return bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset
 
 
@@ -239,11 +240,11 @@ def main(_):
     # If the environment don't follow the interface, an error will be thrown
 
     # show initial config
-    print("Logger outputs at startup:", logger.Logger.CURRENT.output_formats)
+    #print("Logger outputs at startup:", logger.Logger.output_formats)
 
     # set up logger
-    logger.configure(FLAGS.workdir, ["stdout", "tensorboard"]) #, ["stdout", "tensorboard"])
-    print("Logger outputs before training:", logger.Logger.CURRENT.output_formats)
+    logger.configure(FLAGS.workdir, ["stdout", "tensorboard"])  # , ["stdout", "tensorboard"])
+    #print("Logger outputs before training:", logger.Logger.output_formats)
 
     demonstrations = utils.load_demonstrations(
         demo_dir=FLAGS.demo_dir, env_name=FLAGS.env_name, state_demo=False, traj_number=FLAGS.num_demonstrations)
@@ -265,17 +266,16 @@ def main(_):
     environment.action_space.seed(RANDOM_SEED)
     set_random_seed(FLAGS.random_seed)
     # Create the vectorized environment
-    #num_cpu =  1 # Number of processes to use
+    # num_cpu =  1 # Number of processes to use
     #environment = VecNormalize(DummyVecEnv([lambda: gym.make(FLAGS.env_name)]), norm_obs=True, norm_reward=True,clip_obs=10.)
     #environment = SubprocVecEnv([make_env(FLAGS.env_name, i) for i in range(num_cpu)])
 
-    #environment.seed(RANDOM_SEED)
-    #environment.action_space.seed(RANDOM_SEED)
+    # environment.seed(RANDOM_SEED)
+    # environment.action_space.seed(RANDOM_SEED)
 
     n_actions = environment.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.5 * np.ones(n_actions))
 
-    
     bc_dataset, sa_classifier, bc_model, suboptimal_trajs, value_dataset = init_datasets_and_models(demonstrations,
                                                                                                     environment,
                                                                                                     imitation_rewarder,
@@ -295,24 +295,24 @@ def main(_):
     # start training
     # define cutomized td3
     model = TD3('MlpPolicy', environment, action_noise=action_noise, verbose=1,
-                policy_delay=3,
+                policy_delay=2,
                 rewarder=imitation_rewarder,
                 reward_type='pwil',
                 sl_dataset=bc_dataset,
                 value_dataset=value_dataset,
                 use_acceleration=True,
                 expert_classifier=sa_classifier,
-                sub_Q_estimator=sa_classifier, # value_dataset.sub_q_model,
-                opt_Q_estimator=sa_classifier, # value_dataset.opt_q_model)
+                sub_Q_estimator=sa_classifier,  # value_dataset.sub_q_model,
+                opt_Q_estimator=sa_classifier,  # value_dataset.opt_q_model)
                 bound_type=FLAGS.q_bound_type)
 
     model._set_expert_mean_reward(bc_dataset.mean_episode_reward)
 
     parsed_trajs = value_dataset.parse_demonstrations(demonstrations)
-   
-    #model.pretrain_actor_using_demo(epochs=50)
+
+    # model.pretrain_actor_using_demo(epochs=50)
     model.add_expert_trajs_to_buffer(parsed_trajs, value_dataset)
-    #model.pretrain_critic_using_demo()
+    # model.pretrain_critic_using_demo()
     model.learn(total_timesteps=1e6, log_interval=1)
 
     print("Logger outputs after training:", logger.Logger.CURRENT.output_formats)

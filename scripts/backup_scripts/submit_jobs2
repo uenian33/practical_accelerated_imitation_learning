@@ -1,0 +1,350 @@
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_.DS_Store --error=server_logs/scripts_.DS_Store_error scripts/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_.DS_Store --error=server_logs/scripts_ant_.DS_Store_error scripts/ant/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random40_error scripts/ant/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random10_error scripts/ant/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random30_error scripts/ant/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_ant_nstep_lower_run_bipedal_training_random20_error scripts/ant/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random40_error scripts/ant/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random10_error scripts/ant/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random30_error scripts/ant/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_ant_nstep_lower_upper_run_bipedal_training_random20_error scripts/ant/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random40_error scripts/ant/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random10_error scripts/ant/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random30_error scripts/ant/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_ant_DDPGfD_run_bipedal_training_random20_error scripts/ant/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_upper_run_bipedal_training_random40 --error=server_logs/scripts_ant_upper_run_bipedal_training_random40_error scripts/ant/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_upper_run_bipedal_training_random10 --error=server_logs/scripts_ant_upper_run_bipedal_training_random10_error scripts/backup_scripts/ant/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_upper_run_bipedal_training_random30 --error=server_logs/scripts_ant_upper_run_bipedal_training_random30_error scripts/ant/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_upper_run_bipedal_training_random20 --error=server_logs/scripts_ant_upper_run_bipedal_training_random20_error scripts/ant/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_none_run_bipedal_training_random40 --error=server_logs/scripts_ant_none_run_bipedal_training_random40_error scripts/ant/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_none_run_bipedal_training_random10 --error=server_logs/scripts_ant_none_run_bipedal_training_random10_error scripts/ant/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_none_run_bipedal_training_random30 --error=server_logs/scripts_ant_none_run_bipedal_training_random30_error scripts/ant/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_none_run_bipedal_training_random20 --error=server_logs/scripts_ant_none_run_bipedal_training_random20_error scripts/ant/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random40_error scripts/ant/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random10_error scripts/ant/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random30_error scripts/ant/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_ant_constrained_lower_upper_run_bipedal_training_random20_error scripts/ant/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random40_error scripts/ant/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random10_error scripts/ant/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random30_error scripts/ant/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_ant_constrained_lower_run_bipedal_training_random20_error scripts/ant/constrained_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_.DS_Store --error=server_logs/scripts_hopper_.DS_Store_error scripts/hopper/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random40_error scripts/hopper/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random10_error scripts/hopper/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random30_error scripts/hopper/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_hopper_nstep_lower_run_bipedal_training_random20_error scripts/hopper/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random40_error scripts/hopper/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random10_error scripts/hopper/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random30_error scripts/hopper/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_hopper_nstep_lower_upper_run_bipedal_training_random20_error scripts/hopper/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random40_error scripts/hopper/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random10_error scripts/hopper/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random30_error scripts/hopper/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_hopper_DDPGfD_run_bipedal_training_random20_error scripts/hopper/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_upper_run_bipedal_training_random40 --error=server_logs/scripts_hopper_upper_run_bipedal_training_random40_error scripts/hopper/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_upper_run_bipedal_training_random10 --error=server_logs/scripts_hopper_upper_run_bipedal_training_random10_error scripts/hopper/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_upper_run_bipedal_training_random30 --error=server_logs/scripts_hopper_upper_run_bipedal_training_random30_error scripts/hopper/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_upper_run_bipedal_training_random20 --error=server_logs/scripts_hopper_upper_run_bipedal_training_random20_error scripts/hopper/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_none_run_bipedal_training_random40 --error=server_logs/scripts_hopper_none_run_bipedal_training_random40_error scripts/hopper/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_none_run_bipedal_training_random10 --error=server_logs/scripts_hopper_none_run_bipedal_training_random10_error scripts/hopper/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_none_run_bipedal_training_random30 --error=server_logs/scripts_hopper_none_run_bipedal_training_random30_error scripts/hopper/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_none_run_bipedal_training_random20 --error=server_logs/scripts_hopper_none_run_bipedal_training_random20_error scripts/hopper/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random40_error scripts/hopper/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random10_error scripts/hopper/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random30_error scripts/hopper/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_hopper_constrained_lower_upper_run_bipedal_training_random20_error scripts/hopper/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random40_error scripts/hopper/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random10_error scripts/hopper/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random30_error scripts/hopper/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_hopper_constrained_lower_run_bipedal_training_random20_error scripts/hopper/constrained_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_.DS_Store --error=server_logs/scripts_halfcheetah_.DS_Store_error scripts/halfcheetah/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random40_error scripts/halfcheetah/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random10_error scripts/halfcheetah/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random30_error scripts/halfcheetah/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_nstep_lower_run_bipedal_training_random20_error scripts/halfcheetah/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random40_error scripts/halfcheetah/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random10_error scripts/halfcheetah/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random30_error scripts/halfcheetah/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_nstep_lower_upper_run_bipedal_training_random20_error scripts/halfcheetah/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random40_error scripts/halfcheetah/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random10_error scripts/halfcheetah/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random30_error scripts/halfcheetah/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_DDPGfD_run_bipedal_training_random20_error scripts/halfcheetah/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random40_error scripts/halfcheetah/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random10_error scripts/halfcheetah/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random30_error scripts/halfcheetah/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_upper_run_bipedal_training_random20_error scripts/halfcheetah/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_none_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_none_run_bipedal_training_random40_error scripts/halfcheetah/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_none_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_none_run_bipedal_training_random10_error scripts/halfcheetah/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_none_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_none_run_bipedal_training_random30_error scripts/halfcheetah/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_none_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_none_run_bipedal_training_random20_error scripts/halfcheetah/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random40_error scripts/halfcheetah/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random10_error scripts/halfcheetah/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random30_error scripts/halfcheetah/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_constrained_lower_upper_run_bipedal_training_random20_error scripts/halfcheetah/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random40_error scripts/halfcheetah/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random10_error scripts/halfcheetah/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random30_error scripts/halfcheetah/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_halfcheetah_constrained_lower_run_bipedal_training_random20_error scripts/halfcheetah/constrained_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_.DS_Store --error=server_logs/scripts_bipedal_.DS_Store_error scripts/bipedal/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random40_error scripts/bipedal/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random10_error scripts/bipedal/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random30_error scripts/bipedal/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_nstep_lower_run_bipedal_training_random20_error scripts/bipedal/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random40_error scripts/bipedal/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random10_error scripts/bipedal/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random30_error scripts/bipedal/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_nstep_lower_upper_run_bipedal_training_random20_error scripts/bipedal/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random40_error scripts/bipedal/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random10_error scripts/bipedal/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random30_error scripts/bipedal/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_DDPGfD_run_bipedal_training_random20_error scripts/bipedal/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_upper_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_upper_run_bipedal_training_random40_error scripts/bipedal/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_upper_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_upper_run_bipedal_training_random10_error scripts/bipedal/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_upper_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_upper_run_bipedal_training_random30_error scripts/bipedal/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_upper_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_upper_run_bipedal_training_random20_error scripts/bipedal/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_none_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_none_run_bipedal_training_random40_error scripts/bipedal/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_none_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_none_run_bipedal_training_random10_error scripts/bipedal/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_none_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_none_run_bipedal_training_random30_error scripts/bipedal/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_none_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_none_run_bipedal_training_random20_error scripts/bipedal/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random40_error scripts/bipedal/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random10_error scripts/bipedal/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random30_error scripts/bipedal/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_constrained_lower_upper_run_bipedal_training_random20_error scripts/bipedal/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random40_error scripts/bipedal/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random10_error scripts/bipedal/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random30_error scripts/bipedal/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_bipedal_constrained_lower_run_bipedal_training_random20_error scripts/bipedal/constrained_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_.DS_Store --error=server_logs/scripts_walker_.DS_Store_error scripts/walker/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random40_error scripts/walker/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random10_error scripts/walker/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random30_error scripts/walker/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_walker_nstep_lower_run_bipedal_training_random20_error scripts/walker/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random40_error scripts/walker/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random10_error scripts/walker/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random30_error scripts/walker/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_walker_nstep_lower_upper_run_bipedal_training_random20_error scripts/walker/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random40_error scripts/walker/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random10_error scripts/walker/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random30_error scripts/walker/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_walker_DDPGfD_run_bipedal_training_random20_error scripts/walker/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_upper_run_bipedal_training_random40 --error=server_logs/scripts_walker_upper_run_bipedal_training_random40_error scripts/walker/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_upper_run_bipedal_training_random10 --error=server_logs/scripts_walker_upper_run_bipedal_training_random10_error scripts/walker/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_upper_run_bipedal_training_random30 --error=server_logs/scripts_walker_upper_run_bipedal_training_random30_error scripts/walker/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_upper_run_bipedal_training_random20 --error=server_logs/scripts_walker_upper_run_bipedal_training_random20_error scripts/walker/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_none_run_bipedal_training_random40 --error=server_logs/scripts_walker_none_run_bipedal_training_random40_error scripts/walker/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_none_run_bipedal_training_random10 --error=server_logs/scripts_walker_none_run_bipedal_training_random10_error scripts/walker/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_none_run_bipedal_training_random30 --error=server_logs/scripts_walker_none_run_bipedal_training_random30_error scripts/walker/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_none_run_bipedal_training_random20 --error=server_logs/scripts_walker_none_run_bipedal_training_random20_error scripts/walker/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random40_error scripts/walker/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random10_error scripts/walker/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random30_error scripts/walker/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_walker_constrained_lower_upper_run_bipedal_training_random20_error scripts/walker/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random40_error scripts/walker/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random10_error scripts/walker/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random30_error scripts/walker/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_walker_constrained_lower_run_bipedal_training_random20_error scripts/walker/constrained_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_.DS_Store --error=server_logs/scripts_humanoid_.DS_Store_error scripts/humanoid/.DS_Store
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random40_error scripts/humanoid/nstep_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random10_error scripts/humanoid/nstep_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random30_error scripts/humanoid/nstep_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_nstep_lower_run_bipedal_training_random20_error scripts/humanoid/nstep_lower/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random40_error scripts/humanoid/nstep_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random10_error scripts/humanoid/nstep_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random30_error scripts/humanoid/nstep_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_nstep_lower_upper_run_bipedal_training_random20_error scripts/humanoid/nstep_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random40_error scripts/humanoid/DDPGfD/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random10_error scripts/humanoid/DDPGfD/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random30_error scripts/humanoid/DDPGfD/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_DDPGfD_run_bipedal_training_random20_error scripts/humanoid/DDPGfD/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_upper_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_upper_run_bipedal_training_random40_error scripts/humanoid/upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_upper_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_upper_run_bipedal_training_random10_error scripts/humanoid/upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_upper_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_upper_run_bipedal_training_random30_error scripts/humanoid/upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_upper_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_upper_run_bipedal_training_random20_error scripts/humanoid/upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_none_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_none_run_bipedal_training_random40_error scripts/humanoid/none/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_none_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_none_run_bipedal_training_random10_error scripts/humanoid/none/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_none_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_none_run_bipedal_training_random30_error scripts/humanoid/none/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_none_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_none_run_bipedal_training_random20_error scripts/humanoid/none/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random40_error scripts/humanoid/constrained_lower_upper/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random10_error scripts/humanoid/constrained_lower_upper/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random30_error scripts/humanoid/constrained_lower_upper/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_constrained_lower_upper_run_bipedal_training_random20_error scripts/humanoid/constrained_lower_upper/run_bipedal_training_random20.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random40 --error=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random40_error scripts/humanoid/constrained_lower/run_bipedal_training_random40.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random10 --error=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random10_error scripts/humanoid/constrained_lower/run_bipedal_training_random10.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random30 --error=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random30_error scripts/humanoid/constrained_lower/run_bipedal_training_random30.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=1 --mem=4096 --time=2-22:59:00 --partition=normal --gres=gpu:0  --output=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random20 --error=server_logs/scripts_humanoid_constrained_lower_run_bipedal_training_random20_error scripts/humanoid/constrained_lower/run_bipedal_training_random20.sh
+

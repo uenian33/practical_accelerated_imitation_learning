@@ -1,0 +1,84 @@
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_upper_run_training 		 --error=server_logs/scripts_ant_upper_run_training_error		  scripts/ant/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_nstep_lower_run_training 		 --error=server_logs/scripts_ant_nstep_lower_run_training_error		  scripts/ant/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_nstep_lower_upper_run_training 		 --error=server_logs/scripts_ant_nstep_lower_upper_run_training_error		  scripts/ant/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_none_run_training 		 --error=server_logs/scripts_ant_none_run_training_error		  scripts/ant/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_DDPGfD_run_training 		 --error=server_logs/scripts_ant_DDPGfD_run_training_error		  scripts/ant/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_constrained_lower_run_training 		 --error=server_logs/scripts_ant_constrained_lower_run_training_error		  scripts/ant/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_ant_constrained_lower_upper_run_training 		 --error=server_logs/scripts_ant_constrained_lower_upper_run_training_error		  scripts/ant/run_training_constrained_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_upper_run_training 		 --error=server_logs/scripts_bipedal_upper_run_training_error		  scripts/bipedal/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_nstep_lower_run_training 		 --error=server_logs/scripts_bipedal_nstep_lower_run_training_error		  scripts/bipedal/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_nstep_lower_upper_run_training 		 --error=server_logs/scripts_bipedal_nstep_lower_upper_run_training_error		  scripts/bipedal/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_none_run_training 		 --error=server_logs/scripts_bipedal_none_run_training_error		  scripts/bipedal/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_DDPGfD_run_training 		 --error=server_logs/scripts_bipedal_DDPGfD_run_training_error		  scripts/bipedal/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_constrained_lower_run_training 		 --error=server_logs/scripts_bipedal_constrained_lower_run_training_error		  scripts/bipedal/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_bipedal_constrained_lower_upper_run_training 		 --error=server_logs/scripts_bipedal_constrained_lower_upper_run_training_error		  scripts/bipedal/run_training_constrained_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_upper_run_training 		 --error=server_logs/scripts_halfcheetah_upper_run_training_error		  scripts/halfcheetah/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_nstep_lower_run_training 		 --error=server_logs/scripts_halfcheetah_nstep_lower_run_training_error		  scripts/halfcheetah/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_nstep_lower_upper_run_training 		 --error=server_logs/scripts_halfcheetah_nstep_lower_upper_run_training_error		  scripts/halfcheetah/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_none_run_training 		 --error=server_logs/scripts_halfcheetah_none_run_training_error		  scripts/halfcheetah/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_DDPGfD_run_training 		 --error=server_logs/scripts_halfcheetah_DDPGfD_run_training_error		  scripts/halfcheetah/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_constrained_lower_run_training 		 --error=server_logs/scripts_halfcheetah_constrained_lower_run_training_error		  scripts/halfcheetah/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_halfcheetah_constrained_lower_upper_run_training 		 --error=server_logs/scripts_halfcheetah_constrained_lower_upper_run_training_error		  scripts/halfcheetah/run_training_constrained_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_upper_run_training 		 --error=server_logs/scripts_hopper_upper_run_training_error		  scripts/hopper/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_nstep_lower_run_training 		 --error=server_logs/scripts_hopper_nstep_lower_run_training_error		  scripts/hopper/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_nstep_lower_upper_run_training 		 --error=server_logs/scripts_hopper_nstep_lower_upper_run_training_error		  scripts/hopper/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_none_run_training 		 --error=server_logs/scripts_hopper_none_run_training_error		  scripts/hopper/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_DDPGfD_run_training 		 --error=server_logs/scripts_hopper_DDPGfD_run_training_error		  scripts/hopper/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_constrained_lower_run_training 		 --error=server_logs/scripts_hopper_constrained_lower_run_training_error		  scripts/hopper/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_hopper_constrained_lower_upper_run_training 		 --error=server_logs/scripts_hopper_constrained_lower_upper_run_training_error		  scripts/hopper/run_training_constrained_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_upper_run_training 		 --error=server_logs/scripts_humanoid_upper_run_training_error		  scripts/humanoid/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_nstep_lower_run_training 		 --error=server_logs/scripts_humanoid_nstep_lower_run_training_error		  scripts/humanoid/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_nstep_lower_upper_run_training 		 --error=server_logs/scripts_humanoid_nstep_lower_upper_run_training_error		  scripts/humanoid/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_none_run_training 		 --error=server_logs/scripts_humanoid_none_run_training_error		  scripts/humanoid/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_DDPGfD_run_training 		 --error=server_logs/scripts_humanoid_DDPGfD_run_training_error		  scripts/humanoid/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_constrained_lower_run_training 		 --error=server_logs/scripts_humanoid_constrained_lower_run_training_error		  scripts/humanoid/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_humanoid_constrained_lower_upper_run_training 		 --error=server_logs/scripts_humanoid_constrained_lower_upper_run_training_error		  scripts/humanoid/run_training_constrained_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_upper_run_training 		 --error=server_logs/scripts_walker_upper_run_training_error		  scripts/walker/run_training_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_nstep_lower_run_training 		 --error=server_logs/scripts_walker_nstep_lower_run_training_error		  scripts/walker/run_training_nstep_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_nstep_lower_upper_run_training 		 --error=server_logs/scripts_walker_nstep_lower_upper_run_training_error		  scripts/walker/run_training_nstep_lower_upper.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_none_run_training 		 --error=server_logs/scripts_walker_none_run_training_error		  scripts/walker/run_training_none.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_DDPGfD_run_training 		 --error=server_logs/scripts_walker_DDPGfD_run_training_error		  scripts/walker/run_training_DDPGfD.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_constrained_lower_run_training 		 --error=server_logs/scripts_walker_constrained_lower_run_training_error		  scripts/walker/run_training_constrained_lower.sh
+
+sbatch -J WY_JOB --ntasks=1 --cpus-per-task=3 --mem=40960 --time=2-22:59:00 --partition=normal --gres=gpu:0  		 --output=server_logs/scripts_walker_constrained_lower_upper_run_training 		 --error=server_logs/scripts_walker_constrained_lower_upper_run_training_error		  scripts/walker/run_training_constrained_lower_upper.sh
+
